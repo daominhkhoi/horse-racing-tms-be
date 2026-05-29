@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Swagger UI](https://img.shields.io/badge/Swagger-Integrated-85EA2D.svg)](#)
 
-![Swagger UI Login and Register Demo](./docs/assets/swagger-screenshot.png)
+![Swagger UI Login and Register Demo](https://github.com/daominhkhoi/horse-racing-tms-be/blob/main/screen-shots/Screenshot%202026-05-29%20212116.png)
 _(Note: Replace the image path above with your actual screenshot of the Swagger UI showing the Login and Register endpoints)_
 
 A robust, scalable Web API for managing horse racing tournaments, built with a clean **Module-based** architecture. The project is currently focused on delivering secure, enterprise-grade account management and system security.
