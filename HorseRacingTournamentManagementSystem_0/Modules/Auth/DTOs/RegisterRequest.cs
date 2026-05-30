@@ -6,7 +6,10 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.DTOs
     {
 
         [Required(ErrorMessage = "Email must not empty!")]
-        [EmailAddress(ErrorMessage = "Email is  not valid!")]
+        [RegularExpression(
+         @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$",
+          ErrorMessage = "Invalid email format!"
+            )]
         public string Email { get; set; } = string.Empty;
 
 
