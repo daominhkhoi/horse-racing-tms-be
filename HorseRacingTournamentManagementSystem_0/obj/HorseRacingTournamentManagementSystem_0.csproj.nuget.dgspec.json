@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\1.Learning\\HocKy_5\\SWP391\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj": {}
+    "D:\\1.Learning\\HocKy_5\\SWP391\\BE\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj": {}
   },
   "projects": {
-    "D:\\1.Learning\\HocKy_5\\SWP391\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj": {
+    "D:\\1.Learning\\HocKy_5\\SWP391\\BE\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\1.Learning\\HocKy_5\\SWP391\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj",
+        "projectUniqueName": "D:\\1.Learning\\HocKy_5\\SWP391\\BE\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj",
         "projectName": "HorseRacingTournamentManagementSystem_0",
-        "projectPath": "D:\\1.Learning\\HocKy_5\\SWP391\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj",
+        "projectPath": "D:\\1.Learning\\HocKy_5\\SWP391\\BE\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj",
         "packagesPath": "C:\\Users\\Dao Minh Khoi\\.nuget\\packages\\",
-        "outputPath": "D:\\1.Learning\\HocKy_5\\SWP391\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\obj\\",
+        "outputPath": "D:\\1.Learning\\HocKy_5\\SWP391\\BE\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

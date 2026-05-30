@@ -27,7 +27,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
         public IActionResult Register([FromBody] RegisterRequest request)
         {
             bool emailExists = _context.Users.Any(u => u.Email == request.Email);
-            if (emailExists) return BadRequest(new { message = "Email này đã được sử dụng!" });
+            if (emailExists) return BadRequest(new { message = "Email is used!" });
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
             int roleId = int.TryParse(request.Role, out int parsedRole) ? parsedRole : 5;
@@ -43,10 +43,10 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             _context.Users.Add(newUser);
             _context.SaveChanges();
 
-            return Ok(new { message = "Đăng ký tài khoản thành công!" });
+            return Ok(new { message = "Account registration successful!" });
         }
 
-        // BƯỚC 10 & 11: LOGIN VÀ TẠO JWT
+        // LOGIN VÀ TẠO JWT
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
@@ -54,14 +54,14 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             var user = _context.Users.SingleOrDefault(u => u.Email == request.Email);
             if (user == null || !user.IsActive)
             {
-                return Unauthorized(new { message = "Email không tồn tại hoặc bị khóa!" });
+                return Unauthorized(new { message = "The email address does not exist or is locked!" });
             }
 
             // 2. Kiểm tra Password (BƯỚC 10) - Hàm Verify của BCrypt tự động so sánh mk gốc và mk băm
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
             if (!isPasswordValid)
             {
-                return Unauthorized(new { message = "Mật khẩu không chính xác!" });
+                return Unauthorized(new { message = "The password is incorrect!" });
             }
 
             // 3. Lấy tên Role từ Database để nhét vào Token (VD: từ số 1 thành "Admin")
@@ -91,7 +91,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             // 5. Trả Token về cho người dùng
             return Ok(new
             {
-                message = "Đăng nhập thành công!",
+                message = "Login successful!",
                 token = tokenString
             });
         }

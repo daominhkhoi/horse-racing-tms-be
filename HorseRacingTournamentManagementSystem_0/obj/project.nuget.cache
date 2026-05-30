@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "uarzo5feRoU=",
+  "dgSpecHash": "POOJExSTTbE=",
   "success": true,
-  "projectFilePath": "D:\\1.Learning\\HocKy_5\\SWP391\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj",
+  "projectFilePath": "D:\\1.Learning\\HocKy_5\\SWP391\\BE\\HorseRacingTournamentManagementSystem\\HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Dao Minh Khoi\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Dao Minh Khoi\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
