@@ -49,5 +49,5 @@ HorseRacingTournamentManagementSystem/
 ├── appsettings.json          # Configuration, Connection Strings, and JWT Secret Key
 └── Program.cs                # Dependency Injection, JWT Configuration, and Middleware setup
 ```
-##How to add a table to a database
+## How to add a table to a database
 ![How to add a table to a database](https://github.com/daominhkhoi/horse-racing-tms-be/blob/main/screen-shots/Screenshot%202026-06-01%20231854.png)
