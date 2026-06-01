@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 // Thêm 3 using này để làm Token
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
@@ -86,13 +87,27 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                 signingCredentials: creds
             );
 
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            var accessTokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            var refreshTokenString = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+            var refreshTokenEntity = new RefreshToken
+            {
+                Token = refreshTokenString,
+                UserId = user.UserId,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(7), // Refresh Token sống 7 ngày
+                IsRevoked = false // Đánh dấu token này vẫn đang hợp lệ
+            };
+
+            _context.RefreshTokens.Add(refreshTokenEntity);
+            _context.SaveChanges();
 
             // 5. Trả Token về cho người dùng
             return Ok(new
             {
                 message = "Login successful!",
-                token = tokenString
+                accessToken = accessTokenString,
+                refreshToken = refreshTokenString
             });
         }
     }

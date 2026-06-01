@@ -9,5 +9,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Entities
         // Khai báo 2 bảng sẽ được tạo trong Database
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
     }
 }
