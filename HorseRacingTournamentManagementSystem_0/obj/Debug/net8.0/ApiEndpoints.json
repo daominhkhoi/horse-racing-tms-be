@@ -17,6 +17,22 @@
   },
   {
     "ContainingType": "HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers.AuthController",
+    "Method": "Logout",
+    "RelativePath": "api/auth/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "HorseRacingTournamentManagementSystem_0.Modules.Auth.DTOs.LogoutRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers.AuthController",
     "Method": "Register",
     "RelativePath": "api/auth/register",
     "HttpMethod": "POST",
