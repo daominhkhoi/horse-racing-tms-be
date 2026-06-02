@@ -83,7 +83,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(2), // Token sống được 2 tiếng
+                expires: DateTime.Now.AddMinutes(15), // Token sống được 2 tiếng
                 signingCredentials: creds
             );
 
@@ -95,7 +95,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                 Token = refreshTokenString,
                 UserId = user.UserId,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(7), // Refresh Token sống 7 ngày
+                ExpiresAt = DateTime.UtcNow.AddDays(30), // Refresh Token sống 7 ngày
                 IsRevoked = false // Đánh dấu token này vẫn đang hợp lệ
             };
 
@@ -109,6 +109,43 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                 accessToken = accessTokenString,
                 refreshToken = refreshTokenString
             });
+        }
+
+        [HttpPost("logout")]
+        // Nếu bạn muốn bắt buộc user phải có Access Token hợp lệ mới được gọi API Logout, 
+        // hãy bỏ comment dòng [Authorize] bên dưới:
+        // [Authorize] 
+        public IActionResult Logout([FromBody] LogoutRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.RefreshToken))
+            {
+                return BadRequest(new { message = "Refresh token is required!" });
+            }
+
+            // 1. Tìm Refresh Token trong database
+            var tokenEntity = _context.RefreshTokens.SingleOrDefault(rt => rt.Token == request.RefreshToken);
+
+            // 2. Nếu không tìm thấy, coi như người dùng gửi sai token, nhưng để bảo mật
+            // và giúp Frontend dọn dẹp dễ dàng, ta vẫn trả về OK.
+            if (tokenEntity == null)
+            {
+                return Ok(new { message = "Logout successful!" });
+            }
+
+            // 3. Nếu token đã bị thu hồi trước đó rồi (do người dùng click logout nhiều lần)
+            if (tokenEntity.IsRevoked)
+            {
+                return Ok(new { message = "Logout successful!" });
+            }
+
+            // 4. Thực hiện "ám sát" (Revoke) token
+            tokenEntity.IsRevoked = true;
+            tokenEntity.RevokedAt = DateTime.UtcNow;
+
+            // 5. Lưu xuống DB
+            _context.SaveChanges();
+
+            return Ok(new { message = "Logout successful!" });
         }
     }
 }

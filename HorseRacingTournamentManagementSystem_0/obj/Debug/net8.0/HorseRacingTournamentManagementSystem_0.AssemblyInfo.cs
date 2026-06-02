@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HorseRacingTournamentManagementSystem_0")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b17baaaf491a445551f5eb05c17b60d39d295319")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+164d64c5178332105abc51dbc352b1019cb82fbd")]
 [assembly: System.Reflection.AssemblyProductAttribute("HorseRacingTournamentManagementSystem_0")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HorseRacingTournamentManagementSystem_0")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
