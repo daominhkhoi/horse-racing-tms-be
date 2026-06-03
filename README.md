@@ -26,7 +26,7 @@ Instead of a traditional monolithic MVC structure, this API leverages a **Module
 
 - **Secure User Authentication:** Fully functional Registration and Login flows.
 - **Absolute Data Security:** Passwords are never stored in plain-text, utilizing BCrypt hashing algorithms to ensure data integrity.
-- **Stateless Sessions:** Issues secure JWTs with a 2-hour lifespan for valid login sessions.
+- **Stateless Sessions:** Issues secure JWTs with a 15-minute lifespan for valid login sessions.
 - **Strict Role-Based Access Control (RBAC):** The system implements 5 distinct, isolated user roles to manage permissions seamlessly:
   1. `Admin` (System Administrator)
   2. `HorseOwner` (Horse Owner)
