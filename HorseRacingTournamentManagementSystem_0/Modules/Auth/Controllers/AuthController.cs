@@ -27,11 +27,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterRequest request)
         {
+            request.Email = request.Email.Trim().ToLower();
             bool emailExists = _context.Users.Any(u => u.Email == request.Email);
             if (emailExists) return BadRequest(new { message = "Email is used!" });
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
-            int roleId = int.TryParse(request.Role, out int parsedRole) ? parsedRole : 5;
+            int roleId = 5;
 
             var newUser = new User
             {
@@ -51,6 +52,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
+            request.Email = request.Email.Trim().ToLower();
             // 1. Tìm user theo Email
             var user = _context.Users.SingleOrDefault(u => u.Email == request.Email);
             if (user == null || !user.IsActive)
@@ -83,7 +85,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(15), // Token sống được 2 tiếng
+                expires: DateTime.Now.AddMinutes(15), // Token sống được 15 phút
                 signingCredentials: creds
             );
 
@@ -94,8 +96,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             {
                 Token = refreshTokenString,
                 UserId = user.UserId,
-                CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(30), // Refresh Token sống 7 ngày
+                CreatedAt = DateTime.Now,
+                ExpiresAt = DateTime.Now.AddDays(30), // Refresh Token sống 30 ngày
                 IsRevoked = false // Đánh dấu token này vẫn đang hợp lệ
             };
 
@@ -140,7 +142,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
 
             // 4. Thực hiện "ám sát" (Revoke) token
             tokenEntity.IsRevoked = true;
-            tokenEntity.RevokedAt = DateTime.UtcNow;
+            tokenEntity.RevokedAt = DateTime.Now;
 
             // 5. Lưu xuống DB
             _context.SaveChanges();
