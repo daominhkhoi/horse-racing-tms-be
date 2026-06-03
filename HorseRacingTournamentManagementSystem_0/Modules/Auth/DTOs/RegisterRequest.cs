@@ -21,6 +21,6 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.DTOs
         [Compare("Password", ErrorMessage = "Confirm password doesn't match!!")]
         public string ConfirmPassword { get; set; } = string.Empty;
 
-        public string Role { get; set; } = string.Empty;
+        //public string Role { get; set; } = string.Empty;
     }
 }
