@@ -139,6 +139,12 @@
         ],
         "type": "object",
         "properties": {
+          "userName": {
+            "maxLength": 19,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
           "email": {
             "minLength": 1,
             "pattern": "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",

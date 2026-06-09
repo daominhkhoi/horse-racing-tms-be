@@ -1,5 +1,6 @@
-﻿using HorseRacingTournamentManagementSystem_0.Modules.Auth.DTOs;
-using HorseRacingTournamentManagementSystem_0.Modules.Auth.Entities;
+﻿using HorseRacingTournamentManagementSystem_0.Database;
+using HorseRacingTournamentManagementSystem_0.Entities;
+using HorseRacingTournamentManagementSystem_0.Modules.Auth.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 // Thêm 3 using này để làm Token
@@ -14,11 +15,11 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly HorseRacingDbContext _context;
         private readonly IConfiguration _configuration; // Thêm biến đọc cấu hình
 
         // Bơm cả Database và Configuration vào
-        public AuthController(AppDbContext context, IConfiguration configuration)
+        public AuthController(HorseRacingDbContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
@@ -36,6 +37,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
 
             var newUser = new User
             {
+                UserName = request.UserName,
                 Email = request.Email,
                 PasswordHash = hashedPassword,
                 RoleId = roleId,
@@ -55,7 +57,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             request.Email = request.Email.Trim().ToLower();
             // 1. Tìm user theo Email
             var user = _context.Users.SingleOrDefault(u => u.Email == request.Email);
-            if (user == null || !user.IsActive)
+            if (user == null || user.IsActive != true)
             {
                 return Unauthorized(new { message = "The email address does not exist or is locked!" });
             }

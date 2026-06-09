@@ -13,8 +13,6 @@ GO
 
 USE HorseRacingDB;
 GO
-
---1
 CREATE TABLE Roles (
     RoleID INT IDENTITY(1,1) PRIMARY KEY,
     RoleName NVARCHAR(50) NOT NULL,
@@ -22,7 +20,7 @@ CREATE TABLE Roles (
 );
 GO
 
---2
+
 INSERT INTO Roles (RoleName, Description)
 VALUES 
     (N'Admin', N'System Administrator'),
@@ -32,8 +30,8 @@ VALUES
     (N'Spectator', N'Spectator / Predictor');
 GO
 
---3
 CREATE TABLE Users (
+	UserName NVARCHAR(100) NOT NULL,
     UserID INT IDENTITY(1,1) PRIMARY KEY,
     RoleID INT NOT NULL,
     Email VARCHAR(255) UNIQUE NOT NULL,
@@ -44,31 +42,24 @@ CREATE TABLE Users (
 );
 GO
 
---4
-CREATE TABLE Spectator_Profiles (
+CREATE TABLE Admin_Profiles (
     UserID INT PRIMARY KEY,
-    FullName NVARCHAR(100) NOT NULL,
     Phone VARCHAR(20),
     Avatar VARCHAR(255),
-    TotalPoints INT DEFAULT 0,
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 GO
 
---5
 CREATE TABLE Owner_Profiles (
     UserID INT PRIMARY KEY,
-    FullName NVARCHAR(100) NOT NULL,
     Phone VARCHAR(20),
     Avatar VARCHAR(255),
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 GO
 
---6
 CREATE TABLE Jockey_Profiles (
     UserID INT PRIMARY KEY,
-    FullName NVARCHAR(100) NOT NULL,
     Phone VARCHAR(20),
     Avatar VARCHAR(255),
     Weight FLOAT,
@@ -78,10 +69,9 @@ CREATE TABLE Jockey_Profiles (
 );
 GO
 
---7
+
 CREATE TABLE Referee_Profiles (
     UserID INT PRIMARY KEY,
-    FullName NVARCHAR(100) NOT NULL,
     Phone VARCHAR(20),
     Avatar VARCHAR(255),
     ExpYears INT,
@@ -89,7 +79,15 @@ CREATE TABLE Referee_Profiles (
 );
 GO
 
---8
+CREATE TABLE Spectator_Profiles (
+    UserID INT PRIMARY KEY,
+    Phone VARCHAR(20),
+    Avatar VARCHAR(255),
+    TotalPoints INT DEFAULT 0,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
+);
+GO
+
 CREATE TABLE Tournaments (
     TourID INT IDENTITY(1,1) PRIMARY KEY,
     TourName NVARCHAR(150) NOT NULL,
@@ -101,7 +99,7 @@ CREATE TABLE Tournaments (
 );
 GO
 
---9
+
 CREATE TABLE Horses (
     HorseID INT IDENTITY(1,1) PRIMARY KEY,
     OwnerID INT NOT NULL,
@@ -115,7 +113,7 @@ CREATE TABLE Horses (
 );
 GO
 
---10
+
 CREATE TABLE Horse_Verifications (
     VerifyID INT IDENTITY(1,1) PRIMARY KEY,
     HorseID INT NOT NULL,
@@ -130,7 +128,7 @@ CREATE TABLE Horse_Verifications (
 );
 GO
 
---11
+
 CREATE TABLE Races (
     RaceID INT IDENTITY(1,1) PRIMARY KEY,
     TourID INT NOT NULL,
@@ -143,7 +141,7 @@ CREATE TABLE Races (
 );
 GO
 
---12
+
 CREATE TABLE Referee_Assignments (
     AssignID INT IDENTITY(1,1) PRIMARY KEY,
     RaceID INT NOT NULL,
@@ -154,7 +152,7 @@ CREATE TABLE Referee_Assignments (
 );
 GO
 
---13
+
 CREATE TABLE Race_Participants (
     ParticipantID INT IDENTITY(1,1) PRIMARY KEY,
     RaceID INT NOT NULL,
@@ -170,7 +168,7 @@ CREATE TABLE Race_Participants (
 );
 GO
 
---14
+
 CREATE TABLE Results (
     ResultID INT IDENTITY(1,1) PRIMARY KEY,
     RaceID INT NOT NULL,
@@ -184,7 +182,7 @@ CREATE TABLE Results (
 );
 GO
 
---15
+
 CREATE TABLE Violations (
     ViolationID INT IDENTITY(1,1) PRIMARY KEY,
     RaceID INT NOT NULL,
@@ -199,7 +197,7 @@ CREATE TABLE Violations (
 );
 GO
 
---16
+
 CREATE TABLE Predictions (
     PredictionID INT IDENTITY(1,1) PRIMARY KEY,
     RaceID INT NOT NULL,
@@ -214,7 +212,7 @@ CREATE TABLE Predictions (
 );
 GO
 
---17
+
 CREATE TABLE Reward_Transactions (
     TranID INT IDENTITY(1,1) PRIMARY KEY,
     SpectatorID INT NOT NULL,
@@ -226,7 +224,7 @@ CREATE TABLE Reward_Transactions (
 );
 GO
 
---18
+
 CREATE TABLE Leaderboards (
     BoardID INT IDENTITY(1,1) PRIMARY KEY,
     TourID INT NOT NULL,
@@ -241,7 +239,7 @@ CREATE TABLE Leaderboards (
 );
 GO
 
---19
+
 CREATE TABLE Invitations (
     InviteID INT IDENTITY(1,1) PRIMARY KEY,
     OwnerID INT NOT NULL,
@@ -258,7 +256,7 @@ CREATE TABLE Invitations (
 );
 GO
 
---20
+
 CREATE TABLE RefreshTokens (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     UserId INT NOT NULL,
