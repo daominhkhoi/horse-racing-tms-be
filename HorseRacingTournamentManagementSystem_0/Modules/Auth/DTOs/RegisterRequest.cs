@@ -4,7 +4,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.DTOs
 {
     public class RegisterRequest
     {
+        //username
+        [StringLength(19, MinimumLength = 0,
+            ErrorMessage = "User name must be shorter than 20 characters!")]
+        public string UserName { get; set; } = string.Empty;
 
+        //email
         [Required(ErrorMessage = "Email must not empty!")]
         [RegularExpression(
          @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$",
@@ -12,11 +17,13 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.DTOs
             )]
         public string Email { get; set; } = string.Empty;
 
-
+        //password
         [Required(ErrorMessage = "Password must not empty!")]
-        [StringLength(19, MinimumLength = 9, ErrorMessage = "Passwords must be longer than 8 characters and shorter than 20 characters!")]
+        [StringLength(19, MinimumLength = 9,
+            ErrorMessage = "Passwords must be longer than 8 characters and shorter than 20 characters!")]
         public string Password { get; set; } = string.Empty;
 
+        //confirm password
         [Required(ErrorMessage = "The password confirmation field cannot be left blank!")]
         [Compare("Password", ErrorMessage = "Confirm password doesn't match!!")]
         public string ConfirmPassword { get; set; } = string.Empty;

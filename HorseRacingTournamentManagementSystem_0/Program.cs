@@ -1,4 +1,4 @@
-using HorseRacingTournamentManagementSystem_0.Modules.Auth.Entities;
+using HorseRacingTournamentManagementSystem_0.Database;
 // 1. THÊM 2 DÒNG USING NÀY CHO JWT
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // --- Code cắm Database đã có sẵn của bạn ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<HorseRacingDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 // ==========================================
