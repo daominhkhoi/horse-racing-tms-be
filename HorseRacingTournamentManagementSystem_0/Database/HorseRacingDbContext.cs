@@ -488,7 +488,7 @@ public partial class HorseRacingDbContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
-            entity.Property(e => e.UserName).HasMaxLength(100);
+            entity.Property(e => e.FullName).HasMaxLength(100);
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)

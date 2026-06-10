@@ -4,10 +4,10 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.DTOs
 {
     public class RegisterRequest
     {
-        //username
+        //FullName
         [StringLength(19, MinimumLength = 0,
             ErrorMessage = "User name must be shorter than 20 characters!")]
-        public string UserName { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
 
         //email
         [Required(ErrorMessage = "Email must not empty!")]

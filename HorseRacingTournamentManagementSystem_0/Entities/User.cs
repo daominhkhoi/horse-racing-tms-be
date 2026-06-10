@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace HorseRacingTournamentManagementSystem_0.Entities;
+﻿namespace HorseRacingTournamentManagementSystem_0.Entities;
 
 public partial class User
 {
-    public string UserName { get; set; } = null!;
+    public string FullName { get; set; } = null!;
 
     public int UserId { get; set; }
 
