@@ -37,15 +37,19 @@ Instead of a traditional monolithic MVC structure, this API leverages a **Module
 
 ## 📂 Core Directory Structure
 
-To maintain a clean architecture, the project is organized into self-contained modules rather than standard MVC folders:
+To maintain a clean and scalable architecture, the project adopts a **Modular Monolith** design. Global data access is centralized, while business logic is organized into self-contained feature modules:
 
 ```text
 HorseRacingTournamentManagementSystem/
-├── Modules/
+├── Data/                     # Centralized Database configuration
+│   └── HorseRacingDbContext.cs
+├── Entities/                 # Global Database Models (e.g., User, Role, Race)
+├── Modules/                  # Feature-specific business logic
 │   └── Auth/
 │       ├── Controllers/      # API Request Handlers (e.g., AuthController)
-│       ├── DTOs/             # Data Transfer Objects (e.g., LoginDto, RegisterDto)
-│       └── Entities/         # Database Models (e.g., User, Role, DbContext)
+│       ├── DTOs/             # Data Transfer Objects (e.g., LoginRequest, RegisterDto)
+│       ├── Interfaces/       # Service Contracts (e.g., IAuthService)
+│       └── Services/         # Business Logic Implementation (e.g., AuthService)
 ├── appsettings.json          # Configuration, Connection Strings, and JWT Secret Key
 └── Program.cs                # Dependency Injection, JWT Configuration, and Middleware setup
 ```
