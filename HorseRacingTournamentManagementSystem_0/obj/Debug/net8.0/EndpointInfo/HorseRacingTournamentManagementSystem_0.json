@@ -72,25 +72,6 @@
         "tags": [
           "Auth"
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LogoutRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LogoutRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/LogoutRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "OK"
@@ -117,16 +98,6 @@
             "maxLength": 19,
             "minLength": 9,
             "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
-      "LogoutRequest": {
-        "type": "object",
-        "properties": {
-          "refreshToken": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false
