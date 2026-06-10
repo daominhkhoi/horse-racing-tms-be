@@ -87,7 +87,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(15), // Token sống được 15 phút
+                expires: DateTime.Now.AddMinutes(1), // Token sống được 15 phút
                 signingCredentials: creds
             );
 
@@ -105,13 +105,24 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
 
             _context.RefreshTokens.Add(refreshTokenEntity);
             _context.SaveChanges();
+            //
+            Response.Cookies.Append(
+    "refreshToken",
+    refreshTokenString,
+    new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.None,
+        Expires = DateTime.Now.AddDays(30)
+    });
 
             // 5. Trả Token về cho người dùng
             return Ok(new
             {
                 message = "Login successful!",
                 accessToken = accessTokenString,
-                refreshToken = refreshTokenString
+                // Response.Cookies.Append(...)
             });
         }
 
@@ -119,15 +130,17 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
         // Nếu bạn muốn bắt buộc user phải có Access Token hợp lệ mới được gọi API Logout, 
         // hãy bỏ comment dòng [Authorize] bên dưới:
         // [Authorize] 
-        public IActionResult Logout([FromBody] LogoutRequest request)
+        public IActionResult Logout()
         {
-            if (string.IsNullOrWhiteSpace(request.RefreshToken))
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrWhiteSpace(refreshToken))
             {
-                return BadRequest(new { message = "Refresh token is required!" });
+                return Ok(new { message = "Logout successful!" });
             }
 
-            // 1. Tìm Refresh Token trong database
-            var tokenEntity = _context.RefreshTokens.SingleOrDefault(rt => rt.Token == request.RefreshToken);
+            var tokenEntity = _context.RefreshTokens
+                .SingleOrDefault(rt => rt.Token == refreshToken);
 
             // 2. Nếu không tìm thấy, coi như người dùng gửi sai token, nhưng để bảo mật
             // và giúp Frontend dọn dẹp dễ dàng, ta vẫn trả về OK.
@@ -148,7 +161,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
 
             // 5. Lưu xuống DB
             _context.SaveChanges();
-
+            Response.Cookies.Delete("refreshToken");
             return Ok(new { message = "Logout successful!" });
         }
     }
