@@ -37,7 +37,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
 
             var newUser = new User
             {
-                UserName = request.UserName,
+                FullName = request.FullName,
                 Email = request.Email,
                 PasswordHash = hashedPassword,
                 RoleId = roleId,

@@ -139,7 +139,7 @@
         ],
         "type": "object",
         "properties": {
-          "userName": {
+          "fullName": {
             "maxLength": 19,
             "minLength": 0,
             "type": "string",
