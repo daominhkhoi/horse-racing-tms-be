@@ -61,17 +61,17 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             {
                 return Unauthorized(new { message = "The email address does not exist or is locked!" });
             }
-
+        
             // 2. Kiểm tra Password (BƯỚC 10) - Hàm Verify của BCrypt tự động so sánh mk gốc và mk băm
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
             if (!isPasswordValid)
             {
                 return Unauthorized(new { message = "The password is incorrect!" });
             }
-
+        
             // 3. Lấy tên Role từ Database để nhét vào Token (VD: từ số 1 thành "Admin")
             var roleName = _context.Roles.SingleOrDefault(r => r.RoleId == user.RoleId)?.RoleName ?? "Spectator";
-
+        
             // 4. BƯỚC 11 - TẠO JWT TOKEN
             var claims = new[]
             {
@@ -79,21 +79,21 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(ClaimTypes.Role, roleName) // Phải có dòng này thì [Authorize(Roles="...")] mới hiểu
             };
-
+        
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+        
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(1), // Token sống được 15 phút
+                expires: DateTime.Now.AddMinutes(1), // Token sống được 1 phút
                 signingCredentials: creds
             );
-
+        
             var accessTokenString = new JwtSecurityTokenHandler().WriteToken(token);
             var refreshTokenString = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-
+        
             var refreshTokenEntity = new RefreshToken
             {
                 Token = refreshTokenString,
@@ -102,21 +102,21 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                 ExpiresAt = DateTime.Now.AddDays(30), // Refresh Token sống 30 ngày
                 IsRevoked = false // Đánh dấu token này vẫn đang hợp lệ
             };
-
+        
             _context.RefreshTokens.Add(refreshTokenEntity);
             _context.SaveChanges();
             //
             Response.Cookies.Append(
-    "refreshToken",
-    refreshTokenString,
-    new CookieOptions
-    {
-        HttpOnly = true,
-        Secure = true,
-        SameSite = SameSiteMode.None,
-        Expires = DateTime.Now.AddDays(30)
-    });
-
+                "refreshToken",
+                refreshTokenString,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.Now.AddDays(30)
+                });
+        
             // 5. Trả Token về cho người dùng
             return Ok(new
             {
