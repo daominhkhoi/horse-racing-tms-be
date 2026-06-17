@@ -1,46 +1,50 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\",
+  "WorkspaceRootPath": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\d\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\modules\\auth\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\modules\\auth\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\d\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\d\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\modules\\auth\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\modules\\auth\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\d\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\logoutrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\logoutrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\database\\horseracingdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\database\\horseracingdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\d\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\d\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\entities\\horse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\entities\\horse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\d\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\entities\\violation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\entities\\violation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\d\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\d\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\entities\\adminprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\entities\\adminprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\entities\\adminprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\d\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\database\\horseracingdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\database\\horseracingdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\logoutrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\modules\\auth\\dtos\\logoutrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\entities\\horse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\entities\\horse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\entities\\violation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\entities\\violation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|c:\\users\\daominhkhoi\\desktop\\swp\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -50,119 +54,67 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Program.cs",
+              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Program.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Program.cs",
+              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Program.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAAAsAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-10T00:28:06.757Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "RegisterRequest.cs",
-              "DocumentMoniker": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\RegisterRequest.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\RegisterRequest.cs",
               "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\RegisterRequest.cs",
-              "ToolTip": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\RegisterRequest.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\RegisterRequest.cs",
               "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\RegisterRequest.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAkAAAAeAAAAAAAAAA==",
+              "ViewState": "AgIAABIAAAAAAAAAAAAowAQAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-10T00:05:56.841Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "LogoutRequest.cs",
-              "DocumentMoniker": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LogoutRequest.cs",
-              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LogoutRequest.cs",
-              "ToolTip": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LogoutRequest.cs",
-              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LogoutRequest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T00:05:55.45Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "LoginRequest.cs",
-              "DocumentMoniker": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LoginRequest.cs",
-              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LoginRequest.cs",
-              "ToolTip": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LoginRequest.cs",
-              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LoginRequest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T00:05:54.145Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "AuthController.cs",
-              "DocumentMoniker": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs",
-              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs",
-              "ToolTip": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs",
-              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAAADUAAAAbAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T00:05:49.022Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Violation.cs",
-              "DocumentMoniker": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Violation.cs",
-              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Entities\\Violation.cs",
-              "ToolTip": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Violation.cs",
-              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Entities\\Violation.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T00:05:13.125Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
               "Title": "User.cs",
-              "DocumentMoniker": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\User.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\User.cs",
               "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Entities\\User.cs",
-              "ToolTip": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\User.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\User.cs",
               "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Entities\\User.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-10T00:03:10.259Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Role.cs",
-              "DocumentMoniker": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Role.cs",
-              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Entities\\Role.cs",
-              "ToolTip": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Role.cs",
-              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Entities\\Role.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAxwA0AAABKAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "HorseRacingDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Database\\HorseRacingDbContext.cs",
+              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Database\\HorseRacingDbContext.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Database\\HorseRacingDbContext.cs",
+              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Database\\HorseRacingDbContext.cs",
+              "ViewState": "AgIAAFUBAAAAAAAAAAAAAOoBAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T00:02:57.445Z",
+              "WhenOpened": "2026-06-10T00:01:52.304Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Horse.cs",
-              "DocumentMoniker": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Horse.cs",
-              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Entities\\Horse.cs",
-              "ToolTip": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Horse.cs",
-              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Entities\\Horse.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAA3wBgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T00:02:42.484Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 4,
               "Title": "AdminProfile.cs",
-              "DocumentMoniker": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\AdminProfile.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\AdminProfile.cs",
               "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Entities\\AdminProfile.cs",
-              "ToolTip": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\AdminProfile.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\AdminProfile.cs",
               "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Entities\\AdminProfile.cs",
               "ViewState": "AgIAAAUAAAAAAAAAAAAxwAsAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -171,16 +123,77 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "HorseRacingDbContext.cs",
-              "DocumentMoniker": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Database\\HorseRacingDbContext.cs",
-              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Database\\HorseRacingDbContext.cs",
-              "ToolTip": "F:\\LEARNING\\SWP301\\d\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Database\\HorseRacingDbContext.cs",
-              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Database\\HorseRacingDbContext.cs",
-              "ViewState": "AgIAAKEAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "LoginRequest.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LoginRequest.cs",
+              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LoginRequest.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LoginRequest.cs",
+              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LoginRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T00:01:52.304Z",
+              "WhenOpened": "2026-06-10T00:05:54.145Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs*",
+              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs*",
+              "ViewState": "AgIAABUAAAAAAAAAAAA6wCcAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-10T00:05:49.022Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Violation.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Violation.cs",
+              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Entities\\Violation.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Violation.cs",
+              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Entities\\Violation.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-10T00:05:13.125Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "LogoutRequest.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LogoutRequest.cs",
+              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LogoutRequest.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LogoutRequest.cs",
+              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\DTOs\\LogoutRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-10T00:05:55.45Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Role.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Role.cs",
+              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Entities\\Role.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Role.cs",
+              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Entities\\Role.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAxwA0AAABKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-10T00:02:57.445Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Horse.cs",
+              "DocumentMoniker": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Horse.cs",
+              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Entities\\Horse.cs",
+              "ToolTip": "C:\\Users\\DaoMinhKhoi\\Desktop\\SWP\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Entities\\Horse.cs",
+              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Entities\\Horse.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAA3wBgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-10T00:02:42.484Z"
             }
           ]
         }
