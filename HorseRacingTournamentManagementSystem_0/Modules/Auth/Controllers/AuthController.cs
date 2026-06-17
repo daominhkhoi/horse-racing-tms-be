@@ -55,57 +55,79 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
         public IActionResult Login([FromBody] LoginRequest request)
         {
             request.Email = request.Email.Trim().ToLower();
+            
             // 1. Tìm user theo Email
             var user = _context.Users.SingleOrDefault(u => u.Email == request.Email);
             if (user == null || user.IsActive != true)
             {
                 return Unauthorized(new { message = "The email address does not exist or is locked!" });
             }
-        
-            // 2. Kiểm tra Password (BƯỚC 10) - Hàm Verify của BCrypt tự động so sánh mk gốc và mk băm
+
+            // 2. Kiểm tra Password
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
             if (!isPasswordValid)
             {
                 return Unauthorized(new { message = "The password is incorrect!" });
             }
-        
-            // 3. Lấy tên Role từ Database để nhét vào Token (VD: từ số 1 thành "Admin")
+
+            // 3. Lấy tên Role từ Database
             var roleName = _context.Roles.SingleOrDefault(r => r.RoleId == user.RoleId)?.RoleName ?? "Spectator";
-        
-            // 4. BƯỚC 11 - TẠO JWT TOKEN
+
+            // 4. TẠO JWT TOKEN
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimTypes.Role, roleName) // Phải có dòng này thì [Authorize(Roles="...")] mới hiểu
+                new Claim(ClaimTypes.Role, roleName) 
             };
-        
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        
+
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(1), // Token sống được 1 phút
+                expires: DateTime.Now.AddMinutes(1), // Chỉnh lại theo comment của bạn (1 phút)
                 signingCredentials: creds
             );
-        
+
             var accessTokenString = new JwtSecurityTokenHandler().WriteToken(token);
             var refreshTokenString = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-        
-            var refreshTokenEntity = new RefreshToken
+
+            // =========================================================================
+            // CHỈNH SỬA TẠI ĐÂY: TÌM VÀ GHI ĐÈ REFRESH TOKEN NẾU ĐÃ CÓ, CHƯA CÓ THÌ TẠO MỚI
+            // =========================================================================
+            var existingRefreshToken = _context.RefreshTokens.SingleOrDefault(rt => rt.UserId == user.UserId);
+
+            if (existingRefreshToken != null)
             {
-                Token = refreshTokenString,
-                UserId = user.UserId,
-                CreatedAt = DateTime.Now,
-                ExpiresAt = DateTime.Now.AddDays(30), // Refresh Token sống 30 ngày
-                IsRevoked = false // Đánh dấu token này vẫn đang hợp lệ
-            };
-        
-            _context.RefreshTokens.Add(refreshTokenEntity);
+                // Nếu đã có token trong DB -> Cập nhật (đè) token mới
+                existingRefreshToken.Token = refreshTokenString;
+                existingRefreshToken.CreatedAt = DateTime.Now;
+                existingRefreshToken.ExpiresAt = DateTime.Now.AddDays(30);
+                existingRefreshToken.IsRevoked = false;
+                existingRefreshToken.RevokedAt = null; // Xóa thời gian thu hồi nếu trước đó token này từng bị logout
+            }
+            else
+            {
+                // Nếu chưa có -> Tạo mới hoàn toàn
+                var newRefreshTokenEntity = new RefreshToken
+                {
+                    Token = refreshTokenString,
+                    UserId = user.UserId,
+                    CreatedAt = DateTime.Now,
+                    ExpiresAt = DateTime.Now.AddDays(30),
+                    IsRevoked = false
+                };
+                _context.RefreshTokens.Add(newRefreshTokenEntity);
+            }
+
+            // Lưu thay đổi (EF Core sẽ tự hiểu là Update hoặc Insert dựa vào nhánh if/else ở trên)
             _context.SaveChanges();
-            //
+            // =========================================================================
+
+            // Set cookie cho Refresh Token
             Response.Cookies.Append(
                 "refreshToken",
                 refreshTokenString,
@@ -116,16 +138,15 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                     SameSite = SameSiteMode.None,
                     Expires = DateTime.Now.AddDays(30)
                 });
-        
+
             // 5. Trả Token về cho người dùng
             return Ok(new
             {
                 message = "Login successful!",
-                accessToken = accessTokenString,
-                // Response.Cookies.Append(...)
+                accessToken = accessTokenString
             });
         }
-
+        
         [HttpPost("logout")]
         // Nếu bạn muốn bắt buộc user phải có Access Token hợp lệ mới được gọi API Logout, 
         // hãy bỏ comment dòng [Authorize] bên dưới:
