@@ -124,6 +124,7 @@
           "password": {
             "maxLength": 19,
             "minLength": 9,
+            "pattern": "^(?=.*[A-Z])(?=.*\\d).*$",
             "type": "string"
           },
           "confirmPassword": {
