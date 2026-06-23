@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
 {
@@ -189,6 +190,44 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             _context.SaveChanges();
             Response.Cookies.Delete("refreshToken");
             return Ok(new { message = "Logout successful!" });
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public IActionResult ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            // Lấy UserId từ Token
+            var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub) ?? User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "Cannot identify user." });
+            }
+
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var user = _context.Users.SingleOrDefault(u => u.UserId == userId);
+            if (user == null || user.IsActive != true)
+            {
+                return Unauthorized(new { message = "User does not exist or is locked." });
+            }
+
+            // Kiểm tra mật khẩu cũ
+            bool isOldPasswordValid = BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash);
+            if (!isOldPasswordValid)
+            {
+                return BadRequest(new { message = "Incorrect old password." });
+            }
+
+            // Mã hóa và lưu mật khẩu mới
+            string hashedNewPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            user.PasswordHash = hashedNewPassword;
+
+            _context.SaveChanges();
+
+            return Ok(new { message = "Password changed successfully!" });
         }
 
         // ==========================================
