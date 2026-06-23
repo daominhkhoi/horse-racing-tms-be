@@ -13,6 +13,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using HorseRacingTournamentManagementSystem_0.Modules.Auth.Interfaces;
 
 namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
 {
@@ -22,12 +23,14 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
     {
         private readonly HorseRacingDbContext _context;
         private readonly IConfiguration _configuration; // Thêm biến đọc cấu hình
+        private readonly IEmailService _emailService; // Thêm Email service
 
-        // Bơm cả Database và Configuration vào
-        public AuthController(HorseRacingDbContext context, IConfiguration configuration)
+        // Bơm cả Database, Configuration và EmailService vào
+        public AuthController(HorseRacingDbContext context, IConfiguration configuration, IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -228,6 +231,125 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             _context.SaveChanges();
 
             return Ok(new { message = "Password changed successfully!" });
+        }
+
+        // ==========================================
+        // QUÊN MẬT KHẨU
+        // ==========================================
+
+        [HttpPost("forgot")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email))
+                return BadRequest(new { message = "Email is required." });
+
+            var email = request.Email.Trim().ToLower();
+            var user = _context.Users.SingleOrDefault(u => u.Email == email);
+            if (user == null || user.IsActive != true)
+            {
+                // To prevent email enumeration, return a generic success message
+                return Ok(new { message = "If the email is registered, a password reset link will be sent." });
+            }
+
+            // Create a temporary JWT token for reset password
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("Purpose", "ResetPassword") // Custom claim
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(15), // Valid for 15 minutes
+                signingCredentials: creds
+            );
+
+            var resetTokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            var resetLink = $"http://localhost:5173/reset-password?token={resetTokenString}";
+
+            try
+            {
+                // Send the email via SendGrid
+                await _emailService.SendPasswordResetEmailAsync(user.Email, resetLink);
+            }
+            catch (Exception ex)
+            {
+                // Optionally log the exception
+                Console.WriteLine($"Failed to send email: {ex.Message}");
+                return StatusCode(500, new { message = "Failed to send reset email. Please try again later." });
+            }
+
+            return Ok(new { message = "If the email is registered, a password reset link will be sent." });
+        }
+
+        [HttpPost("reset-password")]
+        public IActionResult ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Token) || string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                return BadRequest(new { message = "Token and new password are required." });
+            }
+
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!);
+
+                tokenHandler.ValidateToken(request.Token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = _configuration["Jwt:Audience"],
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var purposeClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == "Purpose")?.Value;
+                
+                if (purposeClaim != "ResetPassword")
+                {
+                    return BadRequest(new { message = "Invalid token type." });
+                }
+
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                if (!int.TryParse(userIdClaim, out int userId))
+                {
+                    return BadRequest(new { message = "Invalid token data." });
+                }
+
+                var user = _context.Users.SingleOrDefault(u => u.UserId == userId);
+                if (user == null || user.IsActive != true)
+                {
+                    return BadRequest(new { message = "User not found or is inactive." });
+                }
+
+                // Hash the new password and update
+                string hashedNewPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+                user.PasswordHash = hashedNewPassword;
+
+                _context.SaveChanges();
+
+                return Ok(new { message = "Password has been successfully reset." });
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                return BadRequest(new { message = "The reset link has expired." });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Invalid or expired reset token." });
+            }
         }
 
         // ==========================================
