@@ -1,7 +1,11 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "F:\\LEARNING\\SWP301\\fe_be\\horse-racing-tms-be\\",
+  "WorkspaceRootPath": "F:\\LEARNING\\SWP301\\fe_be_2\\horse-racing-tms-be\\",
   "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|f:\\learning\\swp301\\fe_be_2\\horse-racing-tms-be\\horseracingtournamentmanagementsystem_0\\modules\\auth\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822A80D9-E2CE-A270-00B7-913634841FA3}|HorseRacingTournamentManagementSystem_0\\HorseRacingTournamentManagementSystem_0.csproj|solutionrelative:horseracingtournamentmanagementsystem_0\\modules\\auth\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\ADMIN\\AppData\\Roaming\\Microsoft\\UserSecrets\\2ba94055-a56f-41bf-98ae-b0fbc13550c8\\secrets.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
@@ -18,12 +22,25 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "F:\\LEARNING\\SWP301\\fe_be_2\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs",
+              "ToolTip": "F:\\LEARNING\\SWP301\\fe_be_2\\horse-racing-tms-be\\HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "HorseRacingTournamentManagementSystem_0\\Modules\\Auth\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAI0BAAAAAAAAAAAgwJgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-24T05:39:24.593Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "secrets.json",
               "DocumentMoniker": "C:\\Users\\ADMIN\\AppData\\Roaming\\Microsoft\\UserSecrets\\2ba94055-a56f-41bf-98ae-b0fbc13550c8\\secrets.json",
               "ToolTip": "C:\\Users\\ADMIN\\AppData\\Roaming\\Microsoft\\UserSecrets\\2ba94055-a56f-41bf-98ae-b0fbc13550c8\\secrets.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAApAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-06-24T00:06:44.582Z",
+              "WhenOpened": "2026-06-24T03:33:15.586Z",
               "EditorCaption": ""
             }
           ]

@@ -61,4 +61,15 @@ public class UserService : IUserService
             PageSize = pageSize
         };
     }
+
+    public async Task<bool> ToggleUserStatusAsync(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+            return false;
+
+        user.IsActive = !(user.IsActive ?? true);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

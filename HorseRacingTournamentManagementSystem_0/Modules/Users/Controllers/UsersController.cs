@@ -33,4 +33,14 @@ public class UsersController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPut("{id}/status")]
+    public async Task<IActionResult> ToggleUserStatus(int id)
+    {
+        var success = await _userService.ToggleUserStatusAsync(id);
+        if (!success)
+            return NotFound(new { message = "User not found." });
+
+        return Ok(new { message = "User status updated successfully." });
+    }
 }
