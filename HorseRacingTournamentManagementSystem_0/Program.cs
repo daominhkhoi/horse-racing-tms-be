@@ -8,12 +8,17 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HorseRacingTournamentManagementSystem_0.Modules.Auth.Interfaces;
 using HorseRacingTournamentManagementSystem_0.Modules.Auth.Services;
+using HorseRacingTournamentManagementSystem_0.Modules.Users.Interfaces;
+using HorseRacingTournamentManagementSystem_0.Modules.Users.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 
 // Register EmailService
 builder.Services.AddScoped<IEmailService, EmailService>();
+
+// Register UserService
+builder.Services.AddScoped<IUserService, UserService>();
 
 // --- Code cắm Database đã có sẵn của bạn ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
