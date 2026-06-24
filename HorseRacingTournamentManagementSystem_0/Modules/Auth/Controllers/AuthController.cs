@@ -1,9 +1,10 @@
 using HorseRacingTournamentManagementSystem_0.Database;
 using HorseRacingTournamentManagementSystem_0.Entities;
 using HorseRacingTournamentManagementSystem_0.Modules.Auth.DTOs;
+using HorseRacingTournamentManagementSystem_0.Modules.Auth.Interfaces;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 // Thêm 3 using này để làm Token
@@ -11,9 +12,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using HorseRacingTournamentManagementSystem_0.Modules.Auth.Interfaces;
 
 namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
 {
@@ -316,7 +314,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var purposeClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == "Purpose")?.Value;
-                
+
                 if (purposeClaim != "ResetPassword")
                 {
                     return BadRequest(new { message = "Invalid token type." });
@@ -413,7 +411,9 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             }
             else if (user.IsActive != true)
             {
-                return Unauthorized(new { message = "Tài khoản của bạn đã bị khóa!" });
+                // Redirect back to login page with error message
+                var loginUrlWithError = $"http://localhost:5173/login?error={Uri.EscapeDataString("Your account has been locked!")}";
+                return Redirect(loginUrlWithError);
             }
 
             // Cập nhật Avatar từ Google nếu có

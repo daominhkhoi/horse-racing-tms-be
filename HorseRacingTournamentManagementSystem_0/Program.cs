@@ -11,6 +11,8 @@ using HorseRacingTournamentManagementSystem_0.Modules.Auth.Interfaces;
 using HorseRacingTournamentManagementSystem_0.Modules.Auth.Services;
 using HorseRacingTournamentManagementSystem_0.Modules.Shared.Settings;
 using HorseRacingTournamentManagementSystem_0.Modules.Shared.Services;
+using HorseRacingTournamentManagementSystem_0.Modules.Users.Interfaces;
+using HorseRacingTournamentManagementSystem_0.Modules.Users.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
@@ -21,15 +23,15 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 // Register Cloudinary
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+// Register UserService
+builder.Services.AddScoped<IUserService, UserService>();
 
 // --- Code cắm Database đã có sẵn của bạn ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<HorseRacingDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// ==========================================
 // CẦN CHỈNH SỬA THÊM: Đăng ký dịch vụ CORS cho React
-// ==========================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
@@ -84,9 +86,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ==========================================
 // CẦN CHỈNH SỬA THÊM: Kích hoạt CORS (Phải đứng trước Authentication)
-// ==========================================
 app.UseCors("AllowReactApp");
 
 // 3. THÊM DÒNG NÀY (BẮT BUỘC PHẢI NẰM TRƯỚC UseAuthorization)
