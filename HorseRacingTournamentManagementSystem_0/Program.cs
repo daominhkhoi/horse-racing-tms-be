@@ -1,4 +1,5 @@
 using HorseRacingTournamentManagementSystem_0.Database;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 // 1. THÊM 2 DÒNG USING NÀY CHO JWT
@@ -8,12 +9,18 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HorseRacingTournamentManagementSystem_0.Modules.Auth.Interfaces;
 using HorseRacingTournamentManagementSystem_0.Modules.Auth.Services;
+using HorseRacingTournamentManagementSystem_0.Modules.Shared.Settings;
+using HorseRacingTournamentManagementSystem_0.Modules.Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 
 // Register EmailService
 builder.Services.AddScoped<IEmailService, EmailService>();
+
+// Register Cloudinary
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 // --- Code cắm Database đã có sẵn của bạn ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -60,6 +67,7 @@ builder.Services.AddAuthentication(options =>
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
     options.SignInScheme = "ExternalCookie";
+    options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
 });
 
 builder.Services.AddControllers();
