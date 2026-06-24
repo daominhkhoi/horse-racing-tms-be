@@ -95,7 +95,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(1), // Chỉnh lại theo comment của bạn (1 phút)
+                expires: DateTime.Now.AddMinutes(60), // Đã đổi thành 60 phút để dễ test
                 signingCredentials: creds
             );
 
@@ -378,6 +378,15 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
             var name = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
             var googleId = claims?.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var picture = claims?.FirstOrDefault(c => c.Type == "urn:google:picture" || c.Type == "picture" || c.Type == "image")?.Value;
+
+            Console.WriteLine("=== GOOGLE CLAIMS ===");
+            if (claims != null) {
+                foreach(var c in claims) {
+                    Console.WriteLine($"{c.Type}: {c.Value}");
+                }
+            }
+            Console.WriteLine("EXTRACTED PICTURE: " + picture);
 
             if (string.IsNullOrEmpty(email))
             {
@@ -405,6 +414,27 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
                 // Redirect back to login page with error message
                 var loginUrlWithError = $"http://localhost:5173/login?error={Uri.EscapeDataString("Your account has been locked!")}";
                 return Redirect(loginUrlWithError);
+            }
+
+            // Cập nhật Avatar từ Google nếu có
+            if (!string.IsNullOrEmpty(picture))
+            {
+                if (user.RoleId == 5) // Mặc định Spectator
+                {
+                    var spectatorProfile = _context.SpectatorProfiles.SingleOrDefault(p => p.UserId == user.UserId);
+                    if (spectatorProfile == null)
+                    {
+                        Console.WriteLine("Creating new SpectatorProfile with Google picture.");
+                        spectatorProfile = new SpectatorProfile { UserId = user.UserId, Avatar = picture };
+                        _context.SpectatorProfiles.Add(spectatorProfile);
+                    }
+                    else if (string.IsNullOrEmpty(spectatorProfile.Avatar))
+                    {
+                        Console.WriteLine("Updating existing SpectatorProfile with Google picture.");
+                        spectatorProfile.Avatar = picture;
+                    }
+                }
+                _context.SaveChanges();
             }
 
             // Lấy tên Role (giống y hệt lúc login thường)

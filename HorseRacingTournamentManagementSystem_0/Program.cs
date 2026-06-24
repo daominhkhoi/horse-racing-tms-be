@@ -1,4 +1,5 @@
 using HorseRacingTournamentManagementSystem_0.Database;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 // 1. THÊM 2 DÒNG USING NÀY CHO JWT
@@ -8,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HorseRacingTournamentManagementSystem_0.Modules.Auth.Interfaces;
 using HorseRacingTournamentManagementSystem_0.Modules.Auth.Services;
+using HorseRacingTournamentManagementSystem_0.Modules.Shared.Settings;
+using HorseRacingTournamentManagementSystem_0.Modules.Shared.Services;
 using HorseRacingTournamentManagementSystem_0.Modules.Users.Interfaces;
 using HorseRacingTournamentManagementSystem_0.Modules.Users.Services;
 
@@ -17,6 +20,9 @@ builder.Configuration.AddUserSecrets<Program>();
 // Register EmailService
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+// Register Cloudinary
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 // Register UserService
 builder.Services.AddScoped<IUserService, UserService>();
 
@@ -25,9 +31,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<HorseRacingDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// ==========================================
 // CẦN CHỈNH SỬA THÊM: Đăng ký dịch vụ CORS cho React
-// ==========================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
@@ -65,6 +69,7 @@ builder.Services.AddAuthentication(options =>
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
     options.SignInScheme = "ExternalCookie";
+    options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
 });
 
 builder.Services.AddControllers();
@@ -81,9 +86,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ==========================================
 // CẦN CHỈNH SỬA THÊM: Kích hoạt CORS (Phải đứng trước Authentication)
-// ==========================================
 app.UseCors("AllowReactApp");
 
 // 3. THÊM DÒNG NÀY (BẮT BUỘC PHẢI NẰM TRƯỚC UseAuthorization)
