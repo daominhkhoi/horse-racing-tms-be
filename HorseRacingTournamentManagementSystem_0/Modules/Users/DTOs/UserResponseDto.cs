@@ -7,4 +7,11 @@ public class UserResponseDto
     public string Email { get; set; } = null!;
     public string Role { get; set; } = null!;
     public string Status { get; set; } = null!;
+
+    public string? Phone { get; set; }
+    public string? Avatar { get; set; }
+    public double? Weight { get; set; }
+    public int? ExperienceYear { get; set; }
+    public int? ExpYears { get; set; }
+    public int? TotalPoints { get; set; }
 }

@@ -111,7 +111,7 @@ public class ProfileController : ControllerBase
                 user.AdminProfile.Phone = dto.Phone;
                 user.AdminProfile.Avatar = dto.AvatarUrl;
                 break;
-            case "Owner":
+            case "HorseOwner":
                 if (user.OwnerProfile == null)
                 {
                     user.OwnerProfile = new OwnerProfile { UserId = userId };
