@@ -72,4 +72,31 @@ public class UserService : IUserService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> UpdateUserAsync(int id, UpdateUserRequestDto request)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+            return false;
+
+        var emailExists = await _context.Users.AnyAsync(u => u.Email == request.Email && u.UserId != id);
+        if (emailExists)
+            throw new System.Exception("Email is already in use by another user.");
+
+        user.FullName = request.FullName;
+        user.Email = request.Email;
+
+        var role = await _context.Roles.SingleOrDefaultAsync(r => r.RoleName == request.Role);
+        if (role != null)
+        {
+            user.RoleId = role.RoleId;
+        }
+        else
+        {
+            throw new System.Exception("The specified role does not exist.");
+        }
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

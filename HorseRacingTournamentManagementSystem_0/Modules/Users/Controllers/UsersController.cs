@@ -43,4 +43,21 @@ public class UsersController : ControllerBase
 
         return Ok(new { message = "User status updated successfully." });
     }
+
+    [HttpPut("{id}/update")]
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserRequestDto request)
+    {
+        try
+        {
+            var success = await _userService.UpdateUserAsync(id, request);
+            if (!success)
+                return NotFound(new { message = "User not found." });
+
+            return Ok(new { message = "User updated successfully." });
+        }
+        catch (System.Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }
