@@ -1,4 +1,4 @@
-﻿namespace HorseRacingTournamentManagementSystem_0.Entities;
+namespace HorseRacingTournamentManagementSystem_0.Entities;
 
 public partial class User
 {
@@ -25,6 +25,8 @@ public partial class User
     public virtual RefereeProfile? RefereeProfile { get; set; }
 
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+
+    public virtual ICollection<HorseVerification> HorseVerifications { get; set; } = new List<HorseVerification>();
 
     public virtual Role Role { get; set; } = null!;
 

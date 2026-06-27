@@ -13,6 +13,8 @@ using HorseRacingTournamentManagementSystem_0.Modules.Shared.Settings;
 using HorseRacingTournamentManagementSystem_0.Modules.Shared.Services;
 using HorseRacingTournamentManagementSystem_0.Modules.Users.Interfaces;
 using HorseRacingTournamentManagementSystem_0.Modules.Users.Services;
+using HorseRacingTournamentManagementSystem_0.Modules.Horses.Interfaces;
+using HorseRacingTournamentManagementSystem_0.Modules.Horses.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
@@ -25,6 +27,8 @@ builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection(
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 // Register UserService
 builder.Services.AddScoped<IUserService, UserService>();
+// Register HorseService
+builder.Services.AddScoped<IHorseService, HorseService>();
 
 // --- Code cắm Database đã có sẵn của bạn ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -72,7 +76,11 @@ builder.Services.AddAuthentication(options =>
     options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HorseRacingTournamentManagementSystem_0.Entities;
@@ -23,5 +23,5 @@ public partial class HorseVerification
 
     public virtual Horse Horse { get; set; } = null!;
 
-    public virtual RefereeProfile? VerifiedByNavigation { get; set; }
+    public virtual User? VerifiedByNavigation { get; set; }
 }

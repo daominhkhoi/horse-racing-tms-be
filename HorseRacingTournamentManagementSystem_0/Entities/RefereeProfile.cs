@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HorseRacingTournamentManagementSystem_0.Entities;
@@ -12,8 +12,6 @@ public partial class RefereeProfile
     public string? Avatar { get; set; }
 
     public int? ExpYears { get; set; }
-
-    public virtual ICollection<HorseVerification> HorseVerifications { get; set; } = new List<HorseVerification>();
 
     public virtual ICollection<RefereeAssignment> RefereeAssignments { get; set; } = new List<RefereeAssignment>();
 

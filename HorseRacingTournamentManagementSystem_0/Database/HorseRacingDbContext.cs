@@ -1,4 +1,4 @@
-﻿using HorseRacingTournamentManagementSystem_0.Entities;
+using HorseRacingTournamentManagementSystem_0.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HorseRacingTournamentManagementSystem_0.Database;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HorseRacingTournamentManagementSystem_0.Entities;
@@ -20,6 +20,10 @@ public partial class Horse
     public string? Gender { get; set; }
 
     public string? HealthStatus { get; set; }
+
+    public string? ImageUrl { get; set; }
+
+    public string? Status { get; set; } = "Pending";
 
     public virtual ICollection<HorseVerification> HorseVerifications { get; set; } = new List<HorseVerification>();
 
