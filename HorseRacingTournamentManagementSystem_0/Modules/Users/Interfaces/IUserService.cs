@@ -9,4 +9,5 @@ public interface IUserService
     Task<PagedResult<UserResponseDto>> GetUsersAsync(string searchKeyword, string roleName, int page, int pageSize);
     Task<bool> ToggleUserStatusAsync(int id);
     Task<bool> UpdateUserAsync(int id, UpdateUserRequestDto request);
+    Task<UserResponseDto> CreateUserAsync(CreateUserRequestDto request);
 }

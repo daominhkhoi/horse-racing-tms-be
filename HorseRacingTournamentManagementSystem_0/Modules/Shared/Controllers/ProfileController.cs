@@ -43,7 +43,7 @@ public class ProfileController : ControllerBase
             return NotFound(new { Message = "User not found." });
         }
 
-        var roleName = user.Role.RoleName;
+        var roleName = user.Role?.RoleName ?? "Spectator";
         string? phone = null;
         string? avatarUrl = null;
 
@@ -99,7 +99,7 @@ public class ProfileController : ControllerBase
 
         // Update corresponding profile table based on RoleId
         // Assuming roles: 1=Admin, 2=Owner, 3=Jockey, 4=Referee, 5=Spectator (or similar, we check RoleName)
-        var roleName = user.Role.RoleName;
+        var roleName = user.Role?.RoleName ?? "Spectator";
 
         switch (roleName)
         {
