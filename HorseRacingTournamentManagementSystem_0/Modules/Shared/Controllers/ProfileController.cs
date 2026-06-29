@@ -23,7 +23,7 @@ public class ProfileController : ControllerBase
     [HttpGet("Me")]
     public async Task<IActionResult> GetMyProfile()
     {
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdStr = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
         {
             return Unauthorized();
@@ -70,7 +70,8 @@ public class ProfileController : ControllerBase
     [HttpPut("Me")]
     public async Task<IActionResult> UpdateMyProfile([FromBody] UpdateUserProfileDto dto)
     {
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdStr = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
         {
             return Unauthorized();
