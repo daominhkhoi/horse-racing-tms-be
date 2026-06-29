@@ -117,42 +117,95 @@ public class UserService : IUserService
         var role = await _context.Roles.SingleOrDefaultAsync(r => r.RoleName == request.Role);
         if (role != null)
         {
-            user.RoleId = role.RoleId;
+            if (user.RoleId != role.RoleId)
+            {
+                user.RoleId = role.RoleId;
+                // Save the role change first so the SQL trigger can run and update the database profile tables
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    var msg = ex.InnerException?.Message ?? ex.Message;
+                    throw new System.Exception($"Database error during role change: {msg}");
+                }
+
+                // Detach the user from EF Core context and reload from the database to get the fresh profiles created/deleted by the SQL trigger
+                _context.Entry(user).State = EntityState.Detached;
+                var reloadedUser = await _context.Users
+                    .Include(u => u.AdminProfile)
+                    .Include(u => u.JockeyProfile)
+                    .Include(u => u.OwnerProfile)
+                    .Include(u => u.RefereeProfile)
+                    .Include(u => u.SpectatorProfile)
+                    .FirstOrDefaultAsync(u => u.UserId == id);
+                
+                if (reloadedUser == null)
+                    return false;
+
+                user = reloadedUser;
+            }
 
             if (request.Role == "Jockey")
             {
-                if (user.JockeyProfile == null) { user.JockeyProfile = new JockeyProfile { UserId = id }; }
-                user.JockeyProfile.Phone = request.Phone;
-                if (request.RemoveAvatar) user.JockeyProfile.Avatar = null;
-                user.JockeyProfile.Weight = request.Weight;
-                user.JockeyProfile.ExperienceYear = request.ExperienceYear;
-                user.JockeyProfile.ExpYears = request.ExpYears;
+                var profile = await _context.JockeyProfiles.FirstOrDefaultAsync(p => p.UserId == id);
+                if (profile == null)
+                {
+                    profile = new JockeyProfile { UserId = id };
+                    _context.JockeyProfiles.Add(profile);
+                }
+                profile.Phone = request.Phone;
+                if (request.RemoveAvatar) profile.Avatar = null;
+                profile.Weight = request.Weight;
+                profile.ExperienceYear = request.ExperienceYear;
+                profile.ExpYears = request.ExpYears;
             }
             else if (request.Role == "HorseOwner")
             {
-                if (user.OwnerProfile == null) { user.OwnerProfile = new OwnerProfile { UserId = id }; }
-                user.OwnerProfile.Phone = request.Phone;
-                if (request.RemoveAvatar) user.OwnerProfile.Avatar = null;
+                var profile = await _context.OwnerProfiles.FirstOrDefaultAsync(p => p.UserId == id);
+                if (profile == null)
+                {
+                    profile = new OwnerProfile { UserId = id };
+                    _context.OwnerProfiles.Add(profile);
+                }
+                profile.Phone = request.Phone;
+                if (request.RemoveAvatar) profile.Avatar = null;
             }
             else if (request.Role == "Referee")
             {
-                if (user.RefereeProfile == null) { user.RefereeProfile = new RefereeProfile { UserId = id }; }
-                user.RefereeProfile.Phone = request.Phone;
-                if (request.RemoveAvatar) user.RefereeProfile.Avatar = null;
-                user.RefereeProfile.ExpYears = request.ExpYears;
+                var profile = await _context.RefereeProfiles.FirstOrDefaultAsync(p => p.UserId == id);
+                if (profile == null)
+                {
+                    profile = new RefereeProfile { UserId = id };
+                    _context.RefereeProfiles.Add(profile);
+                }
+                profile.Phone = request.Phone;
+                if (request.RemoveAvatar) profile.Avatar = null;
+                profile.ExpYears = request.ExpYears;
             }
             else if (request.Role == "Spectator")
             {
-                if (user.SpectatorProfile == null) { user.SpectatorProfile = new SpectatorProfile { UserId = id }; }
-                user.SpectatorProfile.Phone = request.Phone;
-                if (request.RemoveAvatar) user.SpectatorProfile.Avatar = null;
-                if (request.TotalPoints.HasValue) user.SpectatorProfile.TotalPoints = request.TotalPoints.Value;
+                var profile = await _context.SpectatorProfiles.FirstOrDefaultAsync(p => p.UserId == id);
+                if (profile == null)
+                {
+                    profile = new SpectatorProfile { UserId = id };
+                    _context.SpectatorProfiles.Add(profile);
+                }
+                profile.Phone = request.Phone;
+                if (request.RemoveAvatar) profile.Avatar = null;
+                if (request.TotalPoints.HasValue) profile.TotalPoints = request.TotalPoints.Value;
             }
             else if (request.Role == "Admin")
             {
-                if (user.AdminProfile == null) { user.AdminProfile = new AdminProfile { UserId = id }; }
-                user.AdminProfile.Phone = request.Phone;
-                if (request.RemoveAvatar) user.AdminProfile.Avatar = null;
+                var profile = await _context.AdminProfiles.FirstOrDefaultAsync(p => p.UserId == id);
+                if (profile == null)
+                {
+                    profile = new AdminProfile { UserId = id };
+                    _context.AdminProfiles.Add(profile);
+                }
+                profile.Phone = request.Phone;
+                if (request.RemoveAvatar) profile.Avatar = null;
             }
         }
         else
@@ -160,7 +213,15 @@ public class UserService : IUserService
             throw new System.Exception("The specified role does not exist.");
         }
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            var msg = ex.InnerException?.Message ?? ex.Message;
+            throw new System.Exception($"Database error saving profile data: {msg}");
+        }
         return true;
     }
 }
