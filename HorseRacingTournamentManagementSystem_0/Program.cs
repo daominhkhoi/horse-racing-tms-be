@@ -1,4 +1,14 @@
 using HorseRacingTournamentManagementSystem_0.Database;
+using HorseRacingTournamentManagementSystem_0.Modules.Auth.Interfaces;
+using HorseRacingTournamentManagementSystem_0.Modules.Auth.Services;
+using HorseRacingTournamentManagementSystem_0.Modules.Horses.Interfaces;
+using HorseRacingTournamentManagementSystem_0.Modules.Horses.Services;
+using HorseRacingTournamentManagementSystem_0.Modules.Jockey.Interfaces;
+using HorseRacingTournamentManagementSystem_0.Modules.Jockey.Services;
+using HorseRacingTournamentManagementSystem_0.Modules.Shared.Services;
+using HorseRacingTournamentManagementSystem_0.Modules.Shared.Settings;
+using HorseRacingTournamentManagementSystem_0.Modules.Users.Interfaces;
+using HorseRacingTournamentManagementSystem_0.Modules.Users.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -6,15 +16,9 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
-using HorseRacingTournamentManagementSystem_0.Modules.Auth.Interfaces;
-using HorseRacingTournamentManagementSystem_0.Modules.Auth.Services;
-using HorseRacingTournamentManagementSystem_0.Modules.Shared.Settings;
-using HorseRacingTournamentManagementSystem_0.Modules.Shared.Services;
-using HorseRacingTournamentManagementSystem_0.Modules.Users.Interfaces;
-using HorseRacingTournamentManagementSystem_0.Modules.Users.Services;
-using HorseRacingTournamentManagementSystem_0.Modules.Horses.Interfaces;
-using HorseRacingTournamentManagementSystem_0.Modules.Horses.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
@@ -29,6 +33,8 @@ builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddScoped<IUserService, UserService>();
 // Register HorseService
 builder.Services.AddScoped<IHorseService, HorseService>();
+// Register JockeyService
+builder.Services.AddScoped<IJockeyService, JockeyService>();
 
 // --- Code cắm Database đã có sẵn của bạn ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -41,12 +47,24 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") // Cổng chạy React của bạn
+            // Liệt kê rõ các origin – bắt buộc khi dùng AllowCredentials()
+            // (Không được dùng AllowAnyOrigin() cùng với AllowCredentials())
+            // Thêm nhiều port vì Vite tự động chọn port khác nếu port mặc định bị chiếm
+            policy.WithOrigins(
+                      "http://localhost:3000",  "https://localhost:3000",
+                      "http://localhost:5173",  "https://localhost:5173",
+                      "http://localhost:5174",  "https://localhost:5174",
+                      "http://localhost:5175",  "https://localhost:5175",
+                      "http://localhost:5176",  "https://localhost:5176",
+                      "http://localhost:5177",  "https://localhost:5177",
+                      "http://localhost:5178",  "https://localhost:5178"
+                  )
                   .AllowAnyHeader()
                   .AllowAnyMethod()
-                  .AllowCredentials();
+                  .AllowCredentials(); // Cần thiết cho withCredentials: true ở FE (Login, Logout)
         });
 });
+
 
 // 2. BƯỚC 12: CẤU HÌNH BẢO MẬT JWT
 builder.Services.AddAuthentication(options =>
@@ -56,6 +74,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.MapInboundClaims = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -64,7 +83,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = ClaimTypes.Name,
     };
 })
 .AddCookie("ExternalCookie")
@@ -82,7 +103,35 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "HorseRacing API", Version = "v1" });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Nhập token theo định dạng: Bearer {token}"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -100,7 +149,5 @@ app.UseCors("AllowReactApp");
 // 3. THÊM DÒNG NÀY (BẮT BUỘC PHẢI NẰM TRƯỚC UseAuthorization)
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
