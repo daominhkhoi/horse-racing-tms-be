@@ -351,6 +351,90 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
         }
 
         // ==========================================
+        // REFRESH TOKEN
+        // ==========================================
+
+        [HttpPost("refresh-token")]
+        public IActionResult RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                return Unauthorized(new { message = "No refresh token found in cookies." });
+            }
+
+            var existingToken = _context.RefreshTokens.SingleOrDefault(rt => rt.Token == refreshToken);
+            if (existingToken == null)
+            {
+                return Unauthorized(new { message = "Invalid refresh token." });
+            }
+
+            if (existingToken.IsRevoked)
+            {
+                return Unauthorized(new { message = "Refresh token has been revoked." });
+            }
+
+            if (existingToken.ExpiresAt < DateTime.Now)
+            {
+                return Unauthorized(new { message = "Refresh token has expired." });
+            }
+
+            var user = _context.Users.SingleOrDefault(u => u.UserId == existingToken.UserId);
+            if (user == null || user.IsActive != true)
+            {
+                return Unauthorized(new { message = "User not found or inactive." });
+            }
+
+            var roleName = _context.Roles.SingleOrDefault(r => r.RoleId == user.RoleId)?.RoleName ?? "Spectator";
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(ClaimTypes.Role, roleName),
+                new Claim(ClaimTypes.Name, user.FullName ?? "User")
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(60),
+                signingCredentials: creds
+            );
+
+            var accessTokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            var newRefreshTokenString = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+            // Update refresh token
+            existingToken.Token = newRefreshTokenString;
+            existingToken.CreatedAt = DateTime.Now;
+            existingToken.ExpiresAt = DateTime.Now.AddDays(30);
+            
+            _context.SaveChanges();
+
+            Response.Cookies.Append(
+                "refreshToken",
+                newRefreshTokenString,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.Now.AddDays(30)
+                });
+
+            return Ok(new
+            {
+                message = "Token refreshed successfully!",
+                accessToken = accessTokenString
+            });
+        }
+
+        // ==========================================
         // TÍCH HỢP ĐĂNG NHẬP GOOGLE
         // ==========================================
 
