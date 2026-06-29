@@ -33,6 +33,8 @@ builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddScoped<IUserService, UserService>();
 // Register HorseService
 builder.Services.AddScoped<IHorseService, HorseService>();
+// Register TournamentService
+builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Interfaces.ITournamentService, HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services.TournamentService>();
 // Register JockeyService
 builder.Services.AddScoped<IJockeyService, JockeyService>();
 
