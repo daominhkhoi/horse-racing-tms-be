@@ -455,7 +455,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
             var result = await HttpContext.AuthenticateAsync("ExternalCookie");
             if (!result.Succeeded)
             {
-                return BadRequest(new { message = "Lỗi xác thực Google." });
+                return BadRequest(new { message = "Google authentication error." });
             }
 
             var claims = result.Principal.Identities.FirstOrDefault()?.Claims;
@@ -474,7 +474,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Auth.Controllers
 
             if (string.IsNullOrEmpty(email))
             {
-                return BadRequest(new { message = "Không lấy được Email từ Google." });
+                return BadRequest(new { message = "Could not retrieve Email from Google." });
             }
 
             // Kiểm tra user trong Database

@@ -56,7 +56,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Controllers
                 var jockeys = await _jockeyService.GetAllJockeysPublicAsync();
                 return Ok(new
                 {
-                    message = "Lấy danh sách jockey thành công!",
+                    message = "Jockey list retrieved successfully!",
                     data = jockeys
                 });
             }
@@ -64,7 +64,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Controllers
             {
                 return StatusCode(500, new
                 {
-                    message = "Lỗi khi lấy danh sách jockey",
+                    message = "Error retrieving jockey list",
                     error = ex.Message
                 });
             }
@@ -106,18 +106,18 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Controllers
                 var result = await _jockeyService.RequestUpdateProfileAsync(id, dto);
 
                 if (!result)
-                    return NotFound(new { message = "Không tìm thấy hồ sơ jockey với ID này." });
+                    return NotFound(new { message = "Jockey profile not found for this ID." });
 
                 return Ok(new
                 {
-                    message = "Gửi yêu cầu cập nhật thông tin thành công! Vui lòng chờ Admin xác nhận."
+                    message = "Update request submitted successfully! Please wait for Admin approval."
                 });
             }
             catch (System.Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    message = "Lỗi khi gửi yêu cầu cập nhật thông tin jockey",
+                    message = "Error submitting jockey update request",
                     error = ex.Message
                 });
             }
@@ -162,21 +162,21 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Controllers
                 if (!result)
                     return NotFound(new
                     {
-                        message = "Không tìm thấy đơn cập nhật đang chờ duyệt cho jockey này."
+                        message = "No pending update request found for this jockey."
                     });
 
                 // Trả về thông báo phù hợp theo quyết định của Admin
-                var action = dto.IsApproved ? "Duyệt" : "Từ chối";
+                var action = dto.IsApproved ? "approved" : "rejected";
                 return Ok(new
                 {
-                    message = $"{action} yêu cầu cập nhật thông tin jockey thành công!"
+                    message = $"Jockey update request {action} successfully!"
                 });
             }
             catch (System.Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    message = "Lỗi khi xử lý yêu cầu duyệt thông tin jockey",
+                    message = "Error processing jockey update review",
                     error = ex.Message
                 });
             }
