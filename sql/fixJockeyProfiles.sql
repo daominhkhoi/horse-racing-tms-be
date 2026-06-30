@@ -15,6 +15,10 @@ BEGIN
 END
 GO
 
+
+------------------------------------------------------------------------------------------------------------------------------
+--RUN CODE BELOW (30/06/2026)
+------------------------------------------------------------------------------------------------------------------------------
 -- Drop Weight columns if they still exist (migration cleanup)
 IF EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Jockey_Profiles]') AND name = 'Weight')
 BEGIN
