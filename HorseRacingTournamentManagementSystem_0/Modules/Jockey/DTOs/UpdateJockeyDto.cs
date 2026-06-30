@@ -28,13 +28,6 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.DTOs
         public string? Avatar { get; set; }
 
         /// <summary>
-        /// Cân nặng hiện tại (kg). Thông tin quan trọng ảnh hưởng đến
-        /// điều kiện tham gia thi đấu – bắt buộc Admin phải xác nhận trước khi áp dụng.
-        /// </summary>
-        [Range(30, 150, ErrorMessage = "Weight must be between 30 and 150 kg")]
-        public double? Weight { get; set; }
-
-        /// <summary>
         /// Số năm kinh nghiệm đua ngựa (tùy chọn, 0–60 năm).
         /// </summary>
         [Range(0, 60, ErrorMessage = "Experience years must be between 0 and 60")]

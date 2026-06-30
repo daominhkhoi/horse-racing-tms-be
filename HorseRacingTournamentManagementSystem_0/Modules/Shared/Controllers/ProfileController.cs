@@ -77,6 +77,20 @@ public class ProfileController : ControllerBase
             return Unauthorized();
         }
 
+        if (!string.IsNullOrWhiteSpace(dto.Phone))
+        {
+            bool phoneExists = await _context.AdminProfiles.AnyAsync(p => p.Phone == dto.Phone && p.UserId != userId) ||
+                               await _context.JockeyProfiles.AnyAsync(p => (p.Phone == dto.Phone || p.PendingPhone == dto.Phone) && p.UserId != userId) ||
+                               await _context.OwnerProfiles.AnyAsync(p => p.Phone == dto.Phone && p.UserId != userId) ||
+                               await _context.RefereeProfiles.AnyAsync(p => p.Phone == dto.Phone && p.UserId != userId) ||
+                               await _context.SpectatorProfiles.AnyAsync(p => p.Phone == dto.Phone && p.UserId != userId);
+                               
+            if (phoneExists)
+            {
+                return BadRequest(new { Message = "Phone number is already in use by another account." });
+            }
+        }
+
         var user = await _context.Users
             .Include(u => u.Role)
             .Include(u => u.AdminProfile)
@@ -94,6 +108,11 @@ public class ProfileController : ControllerBase
         user.FullName = dto.FullName;
         if (!string.IsNullOrEmpty(dto.Email))
         {
+            var emailExists = await _context.Users.AnyAsync(u => u.Email == dto.Email && u.UserId != userId);
+            if (emailExists)
+            {
+                return BadRequest(new { Message = "Email is already in use by another account." });
+            }
             user.Email = dto.Email;
         }
 

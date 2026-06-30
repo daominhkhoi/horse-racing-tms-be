@@ -17,7 +17,6 @@ public class CreateUserRequestDto
     public string? Phone { get; set; }
 
     // Role-specific fields
-    public double? Weight { get; set; }
     public int? ExperienceYear { get; set; }
     public int? ExpYears { get; set; }
     public int? TotalPoints { get; set; }
