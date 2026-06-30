@@ -224,4 +224,102 @@ public class UserService : IUserService
         }
         return true;
     }
+
+    public async Task<UserResponseDto> CreateUserAsync(CreateUserRequestDto request)
+    {
+        var emailExists = await _context.Users.AnyAsync(u => u.Email == request.Email);
+        if (emailExists)
+            throw new System.Exception("Email is already in use.");
+
+        var role = await _context.Roles.SingleOrDefaultAsync(r => r.RoleName == request.Role);
+        if (role == null)
+            throw new System.Exception("The specified role does not exist.");
+
+        var user = new User
+        {
+            FullName = request.FullName,
+            Email = request.Email,
+            RoleId = role.RoleId,
+            IsActive = true,
+            CreatedAt = System.DateTime.Now,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Default@123")
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        // Ensure proper Profile gets created immediately for the new user, ignoring trigger if we just want to set fields
+        // Actually, the database might have a trigger creating empty profiles. Let's load the user to see if the trigger fired.
+        _context.Entry(user).State = EntityState.Detached;
+        var reloadedUser = await _context.Users
+            .Include(u => u.Role)
+            .Include(u => u.AdminProfile)
+            .Include(u => u.JockeyProfile)
+            .Include(u => u.OwnerProfile)
+            .Include(u => u.RefereeProfile)
+            .Include(u => u.SpectatorProfile)
+            .FirstOrDefaultAsync(u => u.UserId == user.UserId);
+
+        if (reloadedUser == null)
+            throw new System.Exception("Error reloading user after creation.");
+
+        user = reloadedUser;
+
+        if (request.Role == "Jockey")
+        {
+            var profile = user.JockeyProfile ?? new JockeyProfile { UserId = user.UserId };
+            if (user.JockeyProfile == null) _context.JockeyProfiles.Add(profile);
+            
+            profile.Phone = request.Phone;
+            profile.Weight = request.Weight;
+            profile.ExperienceYear = request.ExperienceYear;
+            profile.ExpYears = request.ExpYears;
+        }
+        else if (request.Role == "HorseOwner")
+        {
+            var profile = user.OwnerProfile ?? new OwnerProfile { UserId = user.UserId };
+            if (user.OwnerProfile == null) _context.OwnerProfiles.Add(profile);
+
+            profile.Phone = request.Phone;
+        }
+        else if (request.Role == "Referee")
+        {
+            var profile = user.RefereeProfile ?? new RefereeProfile { UserId = user.UserId };
+            if (user.RefereeProfile == null) _context.RefereeProfiles.Add(profile);
+
+            profile.Phone = request.Phone;
+            profile.ExpYears = request.ExpYears;
+        }
+        else if (request.Role == "Spectator")
+        {
+            var profile = user.SpectatorProfile ?? new SpectatorProfile { UserId = user.UserId };
+            if (user.SpectatorProfile == null) _context.SpectatorProfiles.Add(profile);
+
+            profile.Phone = request.Phone;
+            if (request.TotalPoints.HasValue) profile.TotalPoints = request.TotalPoints.Value;
+        }
+        else if (request.Role == "Admin")
+        {
+            var profile = user.AdminProfile ?? new AdminProfile { UserId = user.UserId };
+            if (user.AdminProfile == null) _context.AdminProfiles.Add(profile);
+
+            profile.Phone = request.Phone;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new UserResponseDto
+        {
+            Id = user.UserId,
+            Name = user.FullName,
+            Email = user.Email,
+            Role = user.Role?.RoleName ?? "Unknown",
+            Status = "Active",
+            Phone = request.Phone,
+            Weight = request.Weight,
+            ExperienceYear = request.ExperienceYear,
+            ExpYears = request.ExpYears,
+            TotalPoints = request.TotalPoints
+        };
+    }
 }
