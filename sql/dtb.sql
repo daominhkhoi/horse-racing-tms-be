@@ -62,9 +62,7 @@ CREATE TABLE Jockey_Profiles (
     UserID INT PRIMARY KEY,
     Phone VARCHAR(20),
     Avatar VARCHAR(255),
-    Weight FLOAT,
     ExperienceYear INT,
-    ExpYears INT, -- Dựa theo schema yêu cầu (có thể là duplicate của ExperienceYear)
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 GO
@@ -117,7 +115,7 @@ GO
 CREATE TABLE Horse_Verifications (
     VerifyID INT IDENTITY(1,1) PRIMARY KEY,
     HorseID INT NOT NULL,
-    VerifiedBy INT, -- Thường là RefereeID
+    VerifiedBy INT, 
     VerifyDate DATETIME DEFAULT GETDATE(),
     InspectionURL VARCHAR(255),
     HealthCert_URL VARCHAR(255),
@@ -173,7 +171,7 @@ CREATE TABLE Results (
     ResultID INT IDENTITY(1,1) PRIMARY KEY,
     RaceID INT NOT NULL,
     ParticipantID INT NOT NULL,
-    FinishTime TIME, -- Hoặc FLOAT/INT nếu tính theo giây/mili-giây
+    FinishTime TIME,
     RankPosition INT,
     RewardMoney DECIMAL(18,2),
     ResultStatus NVARCHAR(50),
@@ -263,10 +261,9 @@ CREATE TABLE RefreshTokens (
     Token NVARCHAR(500) NOT NULL,
     ExpiresAt DATETIME NOT NULL,
     CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
-    IsRevoked BIT NOT NULL DEFAULT 0, -- Mặc định là chưa bị thu hồi (0)
-    RevokedAt DATETIME NULL, -- Cho phép NULL vì token mới chưa bị thu hồi
+    IsRevoked BIT NOT NULL DEFAULT 0, 
+    RevokedAt DATETIME NULL, 
     
-    -- Khai báo khoá ngoại trỏ tới bảng Users
     CONSTRAINT FK_RefreshTokens_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 GO

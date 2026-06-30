@@ -67,10 +67,8 @@ public class UserService : IUserService
                          u.RefereeProfile != null ? u.RefereeProfile.Avatar :
                          u.SpectatorProfile != null ? u.SpectatorProfile.Avatar :
                          u.AdminProfile != null ? u.AdminProfile.Avatar : null,
-                Weight = u.JockeyProfile != null ? u.JockeyProfile.Weight : null,
                 ExperienceYear = u.JockeyProfile != null ? u.JockeyProfile.ExperienceYear : null,
-                ExpYears = u.RefereeProfile != null ? u.RefereeProfile.ExpYears : 
-                           (u.JockeyProfile != null ? u.JockeyProfile.ExpYears : null),
+                ExpYears = u.RefereeProfile != null ? u.RefereeProfile.ExpYears : null,
                 TotalPoints = u.SpectatorProfile != null ? u.SpectatorProfile.TotalPoints : null
             })
             .ToListAsync();
@@ -157,9 +155,7 @@ public class UserService : IUserService
                 }
                 profile.Phone = request.Phone;
                 if (request.RemoveAvatar) profile.Avatar = null;
-                profile.Weight = request.Weight;
                 profile.ExperienceYear = request.ExperienceYear;
-                profile.ExpYears = request.ExpYears;
             }
             else if (request.Role == "HorseOwner")
             {
@@ -271,9 +267,7 @@ public class UserService : IUserService
             if (user.JockeyProfile == null) _context.JockeyProfiles.Add(profile);
             
             profile.Phone = request.Phone;
-            profile.Weight = request.Weight;
             profile.ExperienceYear = request.ExperienceYear;
-            profile.ExpYears = request.ExpYears;
         }
         else if (request.Role == "HorseOwner")
         {
@@ -316,7 +310,6 @@ public class UserService : IUserService
             Role = user.Role?.RoleName ?? "Unknown",
             Status = "Active",
             Phone = request.Phone,
-            Weight = request.Weight,
             ExperienceYear = request.ExperienceYear,
             ExpYears = request.ExpYears,
             TotalPoints = request.TotalPoints

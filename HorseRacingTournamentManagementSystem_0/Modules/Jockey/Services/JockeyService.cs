@@ -59,11 +59,25 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Services
             // Bước 2: Không tìm thấy → trả về false để controller trả 404
             if (profile == null) return false;
 
+            // Check if the phone number is already in use by another profile
+            if (!string.IsNullOrWhiteSpace(dto.Phone))
+            {
+                bool phoneExists = await _context.AdminProfiles.AnyAsync(p => p.Phone == dto.Phone && p.UserId != jockeyId) ||
+                                   await _context.JockeyProfiles.AnyAsync(p => (p.Phone == dto.Phone || p.PendingPhone == dto.Phone) && p.UserId != jockeyId) ||
+                                   await _context.OwnerProfiles.AnyAsync(p => p.Phone == dto.Phone && p.UserId != jockeyId) ||
+                                   await _context.RefereeProfiles.AnyAsync(p => p.Phone == dto.Phone && p.UserId != jockeyId) ||
+                                   await _context.SpectatorProfiles.AnyAsync(p => p.Phone == dto.Phone && p.UserId != jockeyId);
+
+                if (phoneExists)
+                {
+                    throw new System.Exception("Phone number is already in use by another account.");
+                }
+            }
+
             // Bước 3: Lưu dữ liệu mới vào các cột Pending (không ghi đè chính thức)
             // Chỉ ghi nếu client gửi giá trị (null = không muốn thay đổi trường đó)
             if (dto.Phone != null)         profile.PendingPhone = dto.Phone;
             if (dto.Avatar != null)        profile.PendingAvatar = dto.Avatar;
-            if (dto.Weight.HasValue)       profile.PendingWeight = dto.Weight;
             if (dto.ExperienceYear.HasValue) profile.PendingExperienceYear = dto.ExperienceYear;
 
             // Bước 4: Đánh dấu trạng thái "Pending" để Admin biết có đơn chờ duyệt
@@ -118,9 +132,6 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Services
                 if (profile.PendingAvatar != null)
                     profile.Avatar = profile.PendingAvatar;
 
-                if (profile.PendingWeight.HasValue)
-                    profile.Weight = profile.PendingWeight;
-
                 if (profile.PendingExperienceYear.HasValue)
                     profile.ExperienceYear = profile.PendingExperienceYear;
 
@@ -135,7 +146,6 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Services
             // Bước 4: Xóa dữ liệu pending sau khi xử lý (dù Approve hay Reject)
             profile.PendingPhone = null;
             profile.PendingAvatar = null;
-            profile.PendingWeight = null;
             profile.PendingExperienceYear = null;
 
             // Lưu thông tin audit: ai duyệt, lúc nào, ghi chú gì

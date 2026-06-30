@@ -26,13 +26,8 @@ public partial class JockeyProfile
     /// <summary>URL ảnh đại diện chính thức.</summary>
     public string? Avatar { get; set; }
 
-    /// <summary>Cân nặng chính thức (kg) – ảnh hưởng đến điều kiện thi đấu.</summary>
-    public double? Weight { get; set; }
-
     /// <summary>Số năm kinh nghiệm chính thức.</summary>
     public int? ExperienceYear { get; set; }
-
-    public int? ExpYears { get; set; }
 
     // ── DỮ LIỆU PENDING (chờ Admin duyệt – FR-JCKY-002) ───────────────────
     /// <summary>Số điện thoại mới đang chờ Admin xét duyệt.</summary>
@@ -41,8 +36,6 @@ public partial class JockeyProfile
     /// <summary>URL ảnh đại diện mới đang chờ Admin xét duyệt.</summary>
     public string? PendingAvatar { get; set; }
 
-    /// <summary>Cân nặng mới (kg) đang chờ Admin xét duyệt.</summary>
-    public double? PendingWeight { get; set; }
 
     /// <summary>Số năm kinh nghiệm mới đang chờ Admin xét duyệt.</summary>
     public int? PendingExperienceYear { get; set; }

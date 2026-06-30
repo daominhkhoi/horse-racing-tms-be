@@ -115,6 +115,10 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Controllers
             }
             catch (System.Exception ex)
             {
+                if (ex.Message.Contains("Phone number"))
+                {
+                    return BadRequest(new { message = ex.Message });
+                }
                 return StatusCode(500, new
                 {
                     message = "Error submitting jockey update request",
