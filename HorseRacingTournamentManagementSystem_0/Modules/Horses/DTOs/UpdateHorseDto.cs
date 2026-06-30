@@ -4,7 +4,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.DTOs
 {
     public class UpdateHorseDto
     {
-        [Required(ErrorMessage = "Tên ngựa không được để trống")]
+        [Required(ErrorMessage = "Horse name is required")]
         public string HorseName { get; set; } = null!;
 
         public string? Breed { get; set; }

@@ -27,11 +27,11 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             try
             {
                 var horse = await _horseService.RegisterHorseAsync(createHorseDto);
-                return Ok(new { message = "Đăng ký ngựa thành công!", data = horse });
+                return Ok(new { message = "Horse registered successfully!", data = horse });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi khi đăng ký ngựa", error = ex.Message });
+                return StatusCode(500, new { message = "Error registering horse", error = ex.Message });
             }
         }
         [HttpGet("owner/{ownerId}")]
@@ -40,11 +40,11 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             try
             {
                 var horses = await _horseService.GetHorsesByOwnerAsync(ownerId);
-                return Ok(new { message = "Lấy danh sách ngựa thành công!", data = horses });
+                return Ok(new { message = "Horse list retrieved successfully!", data = horses });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi khi lấy danh sách ngựa", error = ex.Message });
+                return StatusCode(500, new { message = "Error retrieving horse list", error = ex.Message });
             }
         }
         [HttpGet]
@@ -53,11 +53,11 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             try
             {
                 var horses = await _horseService.GetAllHorsesAsync();
-                return Ok(new { message = "Lấy danh sách ngựa thành công!", data = horses });
+                return Ok(new { message = "Horse list retrieved successfully!", data = horses });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi khi lấy danh sách ngựa", error = ex.Message });
+                return StatusCode(500, new { message = "Error retrieving horse list", error = ex.Message });
             }
         }
 
@@ -72,11 +72,11 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             try
             {
                 var horse = await _horseService.VerifyHorseAsync(id, dto);
-                return Ok(new { message = "Duyệt đơn ngựa thành công!", data = horse });
+                return Ok(new { message = "Horse application verified successfully!", data = horse });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi khi duyệt đơn ngựa", error = ex.Message });
+                return StatusCode(500, new { message = "Error verifying horse application", error = ex.Message });
             }
         }
 
@@ -86,12 +86,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             try
             {
                 var result = await _horseService.DeleteHorseAsync(id);
-                if (!result) return NotFound(new { message = "Không tìm thấy ngựa" });
-                return Ok(new { message = "Retire ngựa thành công!" });
+                if (!result) return NotFound(new { message = "Horse not found" });
+                return Ok(new { message = "Horse retired successfully!" });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi khi retire ngựa", error = ex.Message });
+                return StatusCode(500, new { message = "Error retiring horse", error = ex.Message });
             }
         }
 
@@ -101,12 +101,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             try
             {
                 var result = await _horseService.UpdateHorseStatusAsync(id, "Suspended");
-                if (!result) return NotFound(new { message = "Không tìm thấy ngựa" });
-                return Ok(new { message = "Đình chỉ ngựa thành công!" });
+                if (!result) return NotFound(new { message = "Horse not found" });
+                return Ok(new { message = "Horse suspended successfully!" });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi khi đình chỉ ngựa", error = ex.Message });
+                return StatusCode(500, new { message = "Error suspending horse", error = ex.Message });
             }
         }
 
@@ -116,12 +116,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             try
             {
                 var result = await _horseService.UpdateHorseStatusAsync(id, "Approved");
-                if (!result) return NotFound(new { message = "Không tìm thấy ngựa" });
-                return Ok(new { message = "Khôi phục ngựa thành công!" });
+                if (!result) return NotFound(new { message = "Horse not found" });
+                return Ok(new { message = "Horse reinstated successfully!" });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi khi khôi phục ngựa", error = ex.Message });
+                return StatusCode(500, new { message = "Error reinstating horse", error = ex.Message });
             }
         }
 
@@ -136,12 +136,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             try
             {
                 var result = await _horseService.RequestUpdateHorseAsync(id, dto);
-                if (!result) return NotFound(new { message = "Không tìm thấy ngựa" });
-                return Ok(new { message = "Gửi yêu cầu cập nhật ngựa thành công, đang chờ duyệt!" });
+                if (!result) return NotFound(new { message = "Horse not found" });
+                return Ok(new { message = "Horse update request submitted successfully, pending verification!" });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi khi gửi yêu cầu cập nhật ngựa", error = ex.Message });
+                return StatusCode(500, new { message = "Error submitting horse update request", error = ex.Message });
             }
         }
 
@@ -151,12 +151,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             try
             {
                 var result = await _horseService.ApproveUpdateHorseAsync(id, dto.VerifiedBy, dto.Notes ?? "");
-                if (!result) return NotFound(new { message = "Không tìm thấy yêu cầu cập nhật hoặc ngựa" });
-                return Ok(new { message = "Duyệt yêu cầu cập nhật ngựa thành công!" });
+                if (!result) return NotFound(new { message = "Update request or horse not found" });
+                return Ok(new { message = "Horse update request approved successfully!" });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi khi duyệt cập nhật ngựa", error = ex.Message });
+                return StatusCode(500, new { message = "Error approving horse update", error = ex.Message });
             }
         }
 
@@ -166,12 +166,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             try
             {
                 var result = await _horseService.RejectUpdateHorseAsync(id, dto.VerifiedBy, dto.Notes ?? "");
-                if (!result) return NotFound(new { message = "Không tìm thấy yêu cầu cập nhật hoặc ngựa" });
-                return Ok(new { message = "Từ chối yêu cầu cập nhật ngựa thành công!" });
+                if (!result) return NotFound(new { message = "Update request or horse not found" });
+                return Ok(new { message = "Horse update request rejected successfully!" });
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi khi từ chối cập nhật ngựa", error = ex.Message });
+                return StatusCode(500, new { message = "Error rejecting horse update", error = ex.Message });
             }
         }
     }

@@ -23,20 +23,20 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.DTOs
         /// true  → Admin DUYỆT yêu cầu: dữ liệu pending được áp dụng vào hồ sơ chính thức.
         /// false → Admin TỪ CHỐI yêu cầu: dữ liệu pending bị hủy bỏ.
         /// </summary>
-        [Required(ErrorMessage = "IsApproved là bắt buộc (true = duyệt / false = từ chối)")]
+        [Required(ErrorMessage = "IsApproved is required (true = approve / false = reject)")]
         public bool IsApproved { get; set; }
 
         /// <summary>
         /// Ghi chú của Admin (lý do từ chối hoặc nhận xét khi duyệt) – tùy chọn, tối đa 500 ký tự.
         /// </summary>
-        [MaxLength(500, ErrorMessage = "Ghi chú không được quá 500 ký tự")]
+        [MaxLength(500, ErrorMessage = "Notes cannot exceed 500 characters")]
         public string? Notes { get; set; }
 
         /// <summary>
         /// UserId của Admin đang thực hiện thao tác duyệt.
         /// Dùng để lưu audit trail: ai đã duyệt / từ chối đơn này.
         /// </summary>
-        [Required(ErrorMessage = "ReviewedBy (UserId của Admin) là bắt buộc")]
+        [Required(ErrorMessage = "ReviewedBy is required")]
         public int ReviewedBy { get; set; }
     }
 }
