@@ -40,6 +40,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         [Range(0, 100000, ErrorMessage = "Distance must be a positive number.")]
         public double? Distance { get; set; }
 
+        public List<int> RefereeIds { get; set; } = new List<int>();
+
         public List<CreateRaceParticipantDto> Participants { get; set; } = new List<CreateRaceParticipantDto>();
     }
 

@@ -16,6 +16,34 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Controller
             _tournamentService = tournamentService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllTournaments([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
+        {
+            try
+            {
+                var result = await _tournamentService.GetAllTournamentsAsync(page, pageSize, search);
+                return Ok(new { message = "Tournaments retrieved successfully", data = result });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Error retrieving tournaments", error = ex.Message });
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTournamentById(int id)
+        {
+            try
+            {
+                var tournament = await _tournamentService.GetTournamentByIdAsync(id);
+                return Ok(new { message = "Tournament retrieved successfully", data = tournament });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Error retrieving tournament", error = ex.Message });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateTournament([FromBody] CreateTournamentDto dto)
         {

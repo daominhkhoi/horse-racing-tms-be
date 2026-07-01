@@ -109,6 +109,20 @@ public class UserService : IUserService
         if (emailExists)
             throw new System.Exception("Email is already in use by another user.");
 
+        if (!string.IsNullOrWhiteSpace(request.Phone))
+        {
+            bool phoneExists = await _context.AdminProfiles.AnyAsync(p => p.Phone == request.Phone && p.UserId != id) ||
+                               await _context.JockeyProfiles.AnyAsync(p => (p.Phone == request.Phone || p.PendingPhone == request.Phone) && p.UserId != id) ||
+                               await _context.OwnerProfiles.AnyAsync(p => p.Phone == request.Phone && p.UserId != id) ||
+                               await _context.RefereeProfiles.AnyAsync(p => p.Phone == request.Phone && p.UserId != id) ||
+                               await _context.SpectatorProfiles.AnyAsync(p => p.Phone == request.Phone && p.UserId != id);
+            
+            if (phoneExists)
+            {
+                throw new System.Exception("Phone number is already in use by another account.");
+            }
+        }
+
         user.FullName = request.FullName;
         user.Email = request.Email;
 
@@ -226,6 +240,20 @@ public class UserService : IUserService
         var emailExists = await _context.Users.AnyAsync(u => u.Email == request.Email);
         if (emailExists)
             throw new System.Exception("Email is already in use.");
+
+        if (!string.IsNullOrWhiteSpace(request.Phone))
+        {
+            bool phoneExists = await _context.AdminProfiles.AnyAsync(p => p.Phone == request.Phone) ||
+                               await _context.JockeyProfiles.AnyAsync(p => p.Phone == request.Phone || p.PendingPhone == request.Phone) ||
+                               await _context.OwnerProfiles.AnyAsync(p => p.Phone == request.Phone) ||
+                               await _context.RefereeProfiles.AnyAsync(p => p.Phone == request.Phone) ||
+                               await _context.SpectatorProfiles.AnyAsync(p => p.Phone == request.Phone);
+            
+            if (phoneExists)
+            {
+                throw new System.Exception("Phone number is already in use by another account.");
+            }
+        }
 
         var role = await _context.Roles.SingleOrDefaultAsync(r => r.RoleName == request.Role);
         if (role == null)
