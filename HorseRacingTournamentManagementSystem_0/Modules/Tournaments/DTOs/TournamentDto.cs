@@ -12,6 +12,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         public string? Location { get; set; }
         public decimal? PrizePool { get; set; }
         public string? Status { get; set; }
+        public bool IsHidden { get; set; }
     }
 
     public class TournamentDetailDto : TournamentDto

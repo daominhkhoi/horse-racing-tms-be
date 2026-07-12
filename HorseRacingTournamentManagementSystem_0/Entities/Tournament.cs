@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HorseRacingTournamentManagementSystem_0.Entities;
@@ -18,6 +18,8 @@ public partial class Tournament
     public decimal? PrizePool { get; set; }
 
     public string? Status { get; set; }
+
+    public bool IsHidden { get; set; }
 
     public virtual ICollection<Invitation> Invitations { get; set; } = new List<Invitation>();
 

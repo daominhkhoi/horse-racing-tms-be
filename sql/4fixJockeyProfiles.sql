@@ -38,3 +38,6 @@ BEGIN
     ALTER TABLE [Jockey_Profiles] DROP COLUMN [ExpYears];
 END
 GO
+
+
+  ALTER TABLE Horse_Verifications DROP CONSTRAINT FK__Horse_Ver__Verif__4222D4EF
