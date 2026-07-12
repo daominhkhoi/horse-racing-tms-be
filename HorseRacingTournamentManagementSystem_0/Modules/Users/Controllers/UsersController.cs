@@ -79,4 +79,21 @@ public class UsersController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        try
+        {
+            var success = await _userService.DeleteUserAsync(id);
+            if (!success)
+                return NotFound(new { message = "User not found." });
+
+            return Ok(new { message = "User deleted permanently." });
+        }
+        catch (System.Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

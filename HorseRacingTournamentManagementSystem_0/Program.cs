@@ -3,6 +3,8 @@ using HorseRacingTournamentManagementSystem_0.Modules.Auth.Interfaces;
 using HorseRacingTournamentManagementSystem_0.Modules.Auth.Services;
 using HorseRacingTournamentManagementSystem_0.Modules.Horses.Interfaces;
 using HorseRacingTournamentManagementSystem_0.Modules.Horses.Services;
+using HorseRacingTournamentManagementSystem_0.Modules.Invitation.Interfaces;
+using HorseRacingTournamentManagementSystem_0.Modules.Invitation.Services;
 using HorseRacingTournamentManagementSystem_0.Modules.Jockey.Interfaces;
 using HorseRacingTournamentManagementSystem_0.Modules.Jockey.Services;
 using HorseRacingTournamentManagementSystem_0.Modules.Shared.Services;
@@ -37,6 +39,8 @@ builder.Services.AddScoped<IHorseService, HorseService>();
 builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Interfaces.ITournamentService, HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services.TournamentService>();
 // Register JockeyService
 builder.Services.AddScoped<IJockeyService, JockeyService>();
+// Register InvitationService
+builder.Services.AddScoped<IInvitationService, InvitationService>();
 
 // --- Code cắm Database đã có sẵn của bạn ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

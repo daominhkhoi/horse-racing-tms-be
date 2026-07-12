@@ -31,4 +31,11 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Modules\Invitation\Controllers\" />
+    <Folder Include="Modules\Invitation\Interfaces\" />
+    <Folder Include="Modules\Invitation\Services\" />
+    <Folder Include="Modules\Invitation\DTOs\" />
+  </ItemGroup>
+
 </Project>

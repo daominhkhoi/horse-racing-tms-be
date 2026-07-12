@@ -343,4 +343,141 @@ public class UserService : IUserService
             TotalPoints = request.TotalPoints
         };
     }
+
+    public async Task<bool> DeleteUserAsync(int id)
+    {
+        var user = await _context.Users
+            .Include(u => u.Role)
+            .Include(u => u.AdminProfile)
+            .Include(u => u.JockeyProfile)
+            .Include(u => u.OwnerProfile)
+            .Include(u => u.RefereeProfile)
+            .Include(u => u.SpectatorProfile)
+            .FirstOrDefaultAsync(u => u.UserId == id);
+
+        if (user == null)
+            return false;
+
+        // Do not allow deleting admins
+        if (user.Role?.RoleName == "Admin")
+            throw new System.Exception("Cannot delete Admin accounts.");
+
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            // 1. Delete refresh tokens
+            var refreshTokens = await _context.RefreshTokens.Where(rt => rt.UserId == id).ToListAsync();
+            _context.RefreshTokens.RemoveRange(refreshTokens);
+
+            // 2. Role-specific cleanup:
+            if (user.Role?.RoleName == "Jockey")
+            {
+                // Delete leaderboards referencing Jockey
+                var leaderboards = await _context.Leaderboards.Where(l => l.JockeyId == id).ToListAsync();
+                _context.Leaderboards.RemoveRange(leaderboards);
+
+                // Delete race participants referencing Jockey
+                var participants = await _context.RaceParticipants.Where(rp => rp.JockeyId == id).ToListAsync();
+                _context.RaceParticipants.RemoveRange(participants);
+
+                // Delete invitations referencing Jockey
+                var invitations = await _context.Invitations.Where(i => i.JockeyId == id).ToListAsync();
+                _context.Invitations.RemoveRange(invitations);
+
+                // Delete Jockey Profile
+                if (user.JockeyProfile != null)
+                {
+                    _context.JockeyProfiles.Remove(user.JockeyProfile);
+                }
+            }
+            else if (user.Role?.RoleName == "HorseOwner")
+            {
+                // Find all horses owned by this owner
+                var ownerHorseIds = await _context.Horses
+                    .Where(h => h.OwnerId == id)
+                    .Select(h => h.HorseId)
+                    .ToListAsync();
+
+                if (ownerHorseIds.Any())
+                {
+                    // Delete race participants for these horses
+                    var horseParticipants = await _context.RaceParticipants.Where(rp => ownerHorseIds.Contains(rp.HorseId)).ToListAsync();
+                    _context.RaceParticipants.RemoveRange(horseParticipants);
+
+                    // Delete leaderboards for these horses
+                    var horseLeaderboards = await _context.Leaderboards.Where(l => ownerHorseIds.Contains(l.HorseId)).ToListAsync();
+                    _context.Leaderboards.RemoveRange(horseLeaderboards);
+
+                    // Delete invitations for these horses
+                    var horseInvitations = await _context.Invitations.Where(i => ownerHorseIds.Contains(i.HorseId)).ToListAsync();
+                    _context.Invitations.RemoveRange(horseInvitations);
+
+                    // Delete verifications for these horses
+                    var verifications = await _context.HorseVerifications.Where(hv => ownerHorseIds.Contains(hv.HorseId)).ToListAsync();
+                    _context.HorseVerifications.RemoveRange(verifications);
+
+                    // Delete horses
+                    var horses = await _context.Horses.Where(h => h.OwnerId == id).ToListAsync();
+                    _context.Horses.RemoveRange(horses);
+                }
+
+                // Delete invitations sent/received by this owner
+                var sentInvitations = await _context.Invitations.Where(i => i.OwnerId == id).ToListAsync();
+                _context.Invitations.RemoveRange(sentInvitations);
+
+                // Delete Owner Profile
+                if (user.OwnerProfile != null)
+                {
+                    _context.OwnerProfiles.Remove(user.OwnerProfile);
+                }
+            }
+            else if (user.Role?.RoleName == "Referee")
+            {
+                // Delete referee assignments
+                var assignments = await _context.RefereeAssignments.Where(ra => ra.RefereeId == id).ToListAsync();
+                _context.RefereeAssignments.RemoveRange(assignments);
+
+                // Delete Referee Profile
+                if (user.RefereeProfile != null)
+                {
+                    _context.RefereeProfiles.Remove(user.RefereeProfile);
+                }
+            }
+            else if (user.Role?.RoleName == "Spectator")
+            {
+                // Delete predictions & reward transactions
+                var spectatorPredictions = await _context.Predictions.Where(p => p.SpectatorId == id).ToListAsync();
+                var predictionIds = spectatorPredictions.Select(p => p.PredictionId).ToList();
+
+                var transactions = await _context.RewardTransactions.Where(rt => rt.SpectatorId == id || predictionIds.Contains(rt.PredictionId)).ToListAsync();
+                _context.RewardTransactions.RemoveRange(transactions);
+                _context.Predictions.RemoveRange(spectatorPredictions);
+
+                // Delete Spectator Profile
+                if (user.SpectatorProfile != null)
+                {
+                    _context.SpectatorProfiles.Remove(user.SpectatorProfile);
+                }
+            }
+
+            // Delete verification records verified by this user (set VerifiedBy to null)
+            var verifiedVerifications = await _context.HorseVerifications.Where(hv => hv.VerifiedBy == id).ToListAsync();
+            foreach (var v in verifiedVerifications)
+            {
+                v.VerifiedBy = null;
+            }
+
+            // Finally, delete the User record itself
+            _context.Users.Remove(user);
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return true;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
 }

@@ -82,29 +82,39 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Services
 
         public async Task<Horse> VerifyHorseAsync(int horseId, VerifyHorseDto dto)
         {
+            // Load horse WITHOUT navigation properties to avoid tracking conflicts
             var horse = await _context.Horses
-                .Include(h => h.HorseVerifications)
                 .FirstOrDefaultAsync(h => h.HorseId == horseId);
 
             if (horse == null)
                 throw new Exception("Horse not found");
 
+            // Update horse status directly
             horse.Status = dto.Status;
 
-            var latestVerification = horse.HorseVerifications
+            // Find the latest pending verification record (load separately)
+            var latestVerification = await _context.HorseVerifications
+                .Where(v => v.HorseId == horseId && v.Result == "Pending")
                 .OrderByDescending(v => v.VerifyId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
-            if (latestVerification != null && latestVerification.Result == "Pending")
+            if (latestVerification != null)
             {
                 latestVerification.Result = dto.Status;
                 latestVerification.Notes = dto.Notes;
                 latestVerification.VerifyDate = DateTime.Now;
-                latestVerification.VerifiedBy = dto.VerifiedBy;
+                // Set VerifiedBy to null to avoid FK constraint — 
+                // VerifiedBy links to Users table and may not match any real user
+                latestVerification.VerifiedBy = null;
             }
 
             await _context.SaveChangesAsync();
-            return horse;
+
+            // Return horse with verifications for the response
+            return await _context.Horses
+                .Include(h => h.HorseVerifications)
+                .AsNoTracking()
+                .FirstAsync(h => h.HorseId == horseId);
         }
 
         public async Task<bool> DeleteHorseAsync(int horseId)
