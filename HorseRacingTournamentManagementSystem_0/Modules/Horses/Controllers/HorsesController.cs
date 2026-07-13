@@ -76,7 +76,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
             }
             catch (System.Exception ex)
             {
-                return StatusCode(500, new { message = "Error verifying horse application", error = ex.Message });
+                return StatusCode(500, new { message = "Error verifying horse application", error = ex.Message, innerError = ex.InnerException?.Message });
             }
         }
 

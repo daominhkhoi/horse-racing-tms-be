@@ -19,9 +19,14 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
             _context = context;
         }
 
-        public async Task<PagedResult<TournamentDto>> GetAllTournamentsAsync(int page, int pageSize, string? searchTerm)
+        public async Task<PagedResult<TournamentDto>> GetAllTournamentsAsync(int page, int pageSize, string? searchTerm, bool includeHidden = false)
         {
             var query = _context.Tournaments.AsQueryable();
+
+            if (!includeHidden)
+            {
+                query = query.Where(t => !t.IsHidden);
+            }
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -44,7 +49,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     EndDate = t.EndDate,
                     Location = t.Location,
                     PrizePool = t.PrizePool,
-                    Status = t.Status
+                    Status = t.Status,
+                    IsHidden = t.IsHidden
                 })
                 .ToListAsync();
 
@@ -87,6 +93,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                 Location = tournament.Location,
                 PrizePool = tournament.PrizePool,
                 Status = tournament.Status,
+                IsHidden = tournament.IsHidden,
                 Races = tournament.Races.Select(r => new RaceDto
                 {
                     RaceId = r.RaceId,
@@ -194,6 +201,141 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                 await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        public async Task<Tournament> UpdateTournamentAsync(int id, CreateTournamentDto dto)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var tournament = await _context.Tournaments
+                    .Include(t => t.Races)
+                        .ThenInclude(r => r.RaceParticipants)
+                    .Include(t => t.Races)
+                        .ThenInclude(r => r.RefereeAssignments)
+                    .FirstOrDefaultAsync(t => t.TourId == id);
+
+                if (tournament == null)
+                {
+                    throw new Exception("Tournament not found");
+                }
+
+                if (tournament.Status != "Upcoming")
+                {
+                    throw new Exception("Can only edit tournaments that are 'Upcoming'");
+                }
+
+                // Update basic fields
+                tournament.TourName = dto.TourName;
+                tournament.Location = dto.Location;
+                tournament.StartDate = dto.StartDate;
+                tournament.EndDate = dto.EndDate;
+                tournament.PrizePool = dto.PrizePool;
+
+                // Remove old races (cascade delete will handle participants and referees if configured, otherwise manual delete)
+                // EF Core usually handles deleting dependents if configured, but to be safe, we explicitly remove them:
+                foreach (var oldRace in tournament.Races.ToList())
+                {
+                    _context.RaceParticipants.RemoveRange(oldRace.RaceParticipants);
+                    _context.RefereeAssignments.RemoveRange(oldRace.RefereeAssignments);
+                    _context.Races.Remove(oldRace);
+                }
+                await _context.SaveChangesAsync(); // save deletions first
+
+                // Add new races
+                int roundNumber = 1;
+                foreach (var raceDto in dto.Races)
+                {
+                    var race = new Race
+                    {
+                        TourId = tournament.TourId,
+                        RaceName = raceDto.RaceName,
+                        Round = roundNumber++,
+                        RaceDateTime = raceDto.RaceDateTime,
+                        Distance = raceDto.Distance,
+                        Status = "Upcoming"
+                    };
+
+                    _context.Races.Add(race);
+                    await _context.SaveChangesAsync();
+
+                    foreach (var participantDto in raceDto.Participants)
+                    {
+                        var participant = new RaceParticipant
+                        {
+                            RaceId = race.RaceId,
+                            HorseId = participantDto.HorseId,
+                            JockeyId = participantDto.JockeyId,
+                            LaneNumber = participantDto.LaneNumber,
+                            ParticipationStatus = "Pending"
+                        };
+
+                        _context.RaceParticipants.Add(participant);
+                    }
+
+                    if (raceDto.RefereeIds != null && raceDto.RefereeIds.Any())
+                    {
+                        foreach (var refereeId in raceDto.RefereeIds)
+                        {
+                            var refereeAssignment = new RefereeAssignment
+                            {
+                                RaceId = race.RaceId,
+                                RefereeId = refereeId,
+                                AssignedAt = DateTime.UtcNow
+                            };
+                            _context.RefereeAssignments.Add(refereeAssignment);
+                        }
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return tournament;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<bool> CancelTournamentAsync(int id)
+        {
+            var tournament = await _context.Tournaments
+                .Include(t => t.Races)
+                .FirstOrDefaultAsync(t => t.TourId == id);
+
+            if (tournament == null)
+            {
+                throw new Exception("Tournament not found");
+            }
+
+            if (tournament.Status != "Upcoming")
+            {
+                throw new Exception("Can only cancel tournaments that are 'Upcoming'");
+            }
+
+            tournament.Status = "Cancelled";
+            foreach (var race in tournament.Races)
+            {
+                race.Status = "Cancelled";
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ToggleTournamentHiddenStatusAsync(int id)
+        {
+            var tournament = await _context.Tournaments.FindAsync(id);
+            if (tournament == null)
+                return false;
+
+            tournament.IsHidden = !tournament.IsHidden;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
