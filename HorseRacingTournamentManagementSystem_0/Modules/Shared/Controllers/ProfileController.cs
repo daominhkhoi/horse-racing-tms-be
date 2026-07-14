@@ -46,12 +46,27 @@ public class ProfileController : ControllerBase
         var roleName = user.Role?.RoleName ?? "Spectator";
         string? phone = null;
         string? avatarUrl = null;
+        int? totalPoints = null;
 
-        if (user.AdminProfile != null) { phone = user.AdminProfile.Phone; avatarUrl = user.AdminProfile.Avatar; }
-        else if (user.OwnerProfile != null) { phone = user.OwnerProfile.Phone; avatarUrl = user.OwnerProfile.Avatar; }
-        else if (user.JockeyProfile != null) { phone = user.JockeyProfile.Phone; avatarUrl = user.JockeyProfile.Avatar; }
-        else if (user.RefereeProfile != null) { phone = user.RefereeProfile.Phone; avatarUrl = user.RefereeProfile.Avatar; }
-        else if (user.SpectatorProfile != null) { phone = user.SpectatorProfile.Phone; avatarUrl = user.SpectatorProfile.Avatar; }
+        switch (roleName)
+        {
+            case "Admin":
+                if (user.AdminProfile != null) { phone = user.AdminProfile.Phone; avatarUrl = user.AdminProfile.Avatar; }
+                break;
+            case "HorseOwner":
+                if (user.OwnerProfile != null) { phone = user.OwnerProfile.Phone; avatarUrl = user.OwnerProfile.Avatar; }
+                break;
+            case "Jockey":
+                if (user.JockeyProfile != null) { phone = user.JockeyProfile.Phone; avatarUrl = user.JockeyProfile.Avatar; }
+                break;
+            case "Referee":
+                if (user.RefereeProfile != null) { phone = user.RefereeProfile.Phone; avatarUrl = user.RefereeProfile.Avatar; }
+                break;
+            case "Spectator":
+            default:
+                if (user.SpectatorProfile != null) { phone = user.SpectatorProfile.Phone; avatarUrl = user.SpectatorProfile.Avatar; totalPoints = user.SpectatorProfile.TotalPoints; }
+                break;
+        }
 
         var dto = new UserProfileDto
         {
@@ -61,7 +76,8 @@ public class ProfileController : ControllerBase
             Phone = phone,
             AvatarUrl = avatarUrl,
             JoinedDate = user.CreatedAt,
-            IsActive = user.IsActive ?? true
+            IsActive = user.IsActive ?? true,
+            TotalPoints = totalPoints
         };
 
         return Ok(dto);
