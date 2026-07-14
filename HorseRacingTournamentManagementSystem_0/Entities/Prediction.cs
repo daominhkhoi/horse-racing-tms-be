@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HorseRacingTournamentManagementSystem_0.Entities;
@@ -13,11 +13,11 @@ public partial class Prediction
 
     public int ParticipantId { get; set; }
 
-    public int BetPoints { get; set; }
+    public double BetPoints { get; set; }
 
     public string? Status { get; set; }
 
-    public int? RewardPoints { get; set; }
+    public double? RewardPoints { get; set; }
 
     public virtual RaceParticipant Participant { get; set; } = null!;
 
