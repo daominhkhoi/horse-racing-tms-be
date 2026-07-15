@@ -37,7 +37,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
             if (race == null) return false;
 
             // Optional: you can add a check here to ensure the race status is 'Completed'
-            // if (race.Status != "Completed") return false;
+            if (race.Status == "Awarded") throw new Exception("Cannot edit results of an awarded race.");
 
             // Clear existing results for this race
             var existingResults = await _context.Results.Where(r => r.RaceId == raceId).ToListAsync();
@@ -99,6 +99,56 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
                 .ToListAsync();
 
             return results;
+        }
+
+        public async Task<string> AwardPrizesAsync(int raceId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var race = await _context.Races.FirstOrDefaultAsync(r => r.RaceId == raceId);
+                if (race == null) return "Race not found.";
+                if (race.Status == "Awarded") return "Prizes have already been awarded for this race.";
+
+                var firstPlaceResult = await _context.Results.FirstOrDefaultAsync(r => r.RaceId == raceId && r.RankPosition == 1);
+                if (firstPlaceResult == null) return "Cannot award prizes. No 1st place result found.";
+
+                var predictions = await _context.Predictions
+                    .Include(p => p.Spectator)
+                    .Where(p => p.RaceId == raceId && p.Status == "Active")
+                    .ToListAsync();
+
+                double rewardRatio = race.RewardRatio ?? 2.0;
+
+                foreach (var prediction in predictions)
+                {
+                    if (prediction.ParticipantId == firstPlaceResult.ParticipantId)
+                    {
+                        prediction.Status = "Won";
+                        prediction.RewardPoints = prediction.BetPoints * rewardRatio;
+                        if (prediction.Spectator != null)
+                        {
+                            prediction.Spectator.TotalPoints = (prediction.Spectator.TotalPoints ?? 0) + prediction.RewardPoints;
+                        }
+                    }
+                    else
+                    {
+                        prediction.Status = "Lost";
+                        prediction.RewardPoints = 0;
+                    }
+                }
+
+                race.Status = "Awarded";
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return "Prizes awarded successfully.";
+            }
+            catch (System.Exception)
+            {
+                await transaction.RollbackAsync();
+                return "An error occurred while awarding prizes.";
+            }
         }
     }
 }

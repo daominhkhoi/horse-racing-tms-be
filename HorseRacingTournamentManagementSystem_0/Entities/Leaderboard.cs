@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HorseRacingTournamentManagementSystem_0.Entities;
@@ -13,7 +13,7 @@ public partial class Leaderboard
 
     public int JockeyId { get; set; }
 
-    public int? TotalPoints { get; set; }
+    public double? TotalPoints { get; set; }
 
     public int? TotalWins { get; set; }
 

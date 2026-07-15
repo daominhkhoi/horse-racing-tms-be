@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HorseRacingTournamentManagementSystem_0.Entities;
@@ -11,7 +11,7 @@ public partial class SpectatorProfile
 
     public string? Avatar { get; set; }
 
-    public int? TotalPoints { get; set; }
+    public double? TotalPoints { get; set; }
 
     public virtual ICollection<Prediction> Predictions { get; set; } = new List<Prediction>();
 

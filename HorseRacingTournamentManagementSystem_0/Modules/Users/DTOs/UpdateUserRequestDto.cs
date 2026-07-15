@@ -17,6 +17,6 @@ public class UpdateUserRequestDto
     public string? Phone { get; set; }
     public int? ExperienceYear { get; set; }
     public int? ExpYears { get; set; }
-    public int? TotalPoints { get; set; }
+    public double? TotalPoints { get; set; }
     public bool RemoveAvatar { get; set; }
 }

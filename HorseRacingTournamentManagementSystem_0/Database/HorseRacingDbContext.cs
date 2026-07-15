@@ -204,7 +204,7 @@ public partial class HorseRacingDbContext : DbContext
             entity.Property(e => e.BoardId).HasColumnName("BoardID");
             entity.Property(e => e.HorseId).HasColumnName("HorseID");
             entity.Property(e => e.JockeyId).HasColumnName("JockeyID");
-            entity.Property(e => e.TotalPoints).HasDefaultValue(0);
+            entity.Property(e => e.TotalPoints).HasDefaultValue(0.0);
             entity.Property(e => e.TotalWins).HasDefaultValue(0);
             entity.Property(e => e.TourId).HasColumnName("TourID");
 
@@ -450,7 +450,7 @@ public partial class HorseRacingDbContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
                 .IsUnicode(false);
-            entity.Property(e => e.TotalPoints).HasDefaultValue(0);
+            entity.Property(e => e.TotalPoints).HasDefaultValue(0.0);
 
             entity.HasOne(d => d.User).WithOne(p => p.SpectatorProfile)
                 .HasForeignKey<SpectatorProfile>(d => d.UserId)

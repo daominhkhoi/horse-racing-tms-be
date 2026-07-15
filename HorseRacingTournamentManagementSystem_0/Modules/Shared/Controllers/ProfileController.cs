@@ -46,7 +46,7 @@ public class ProfileController : ControllerBase
         var roleName = user.Role?.RoleName ?? "Spectator";
         string? phone = null;
         string? avatarUrl = null;
-        int? totalPoints = null;
+        double? totalPoints = null;
 
         switch (roleName)
         {

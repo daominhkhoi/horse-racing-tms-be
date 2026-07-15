@@ -66,5 +66,24 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
                 return StatusCode(500, new { message = "Error retrieving race results", error = ex.Message });
             }
         }
+
+        [HttpPost("{id}/award")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AwardPrizes(int id)
+        {
+            try
+            {
+                var result = await _raceService.AwardPrizesAsync(id);
+                if (result.Contains("successfully"))
+                {
+                    return Ok(new { message = result });
+                }
+                return BadRequest(new { message = result });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Error awarding prizes", error = ex.Message });
+            }
+        }
     }
 }

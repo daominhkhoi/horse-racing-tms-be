@@ -9,5 +9,5 @@ public class UserProfileDto
     public string? AvatarUrl { get; set; }
     public DateTime? JoinedDate { get; set; }
     public bool IsActive { get; set; }
-    public int? TotalPoints { get; set; }
+    public double? TotalPoints { get; set; }
 }

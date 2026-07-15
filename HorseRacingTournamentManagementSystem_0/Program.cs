@@ -45,6 +45,8 @@ builder.Services.AddScoped<IJockeyService, JockeyService>();
 builder.Services.AddScoped<IInvitationService, InvitationService>();
 // Register RaceService
 builder.Services.AddScoped<IRaceService, RaceService>();
+// Register PredictionService
+builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Predictions.Interfaces.IPredictionService, HorseRacingTournamentManagementSystem_0.Modules.Predictions.Services.PredictionService>();
 
 // --- Code cắm Database đã có sẵn của bạn ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
