@@ -256,6 +256,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                         Round = roundNumber++,
                         RaceDateTime = raceDto.RaceDateTime,
                         Distance = raceDto.Distance,
+                        RewardRatio = raceDto.RewardRatio,
                         Status = "Upcoming"
                     };
 
