@@ -110,8 +110,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
                 if (race == null) return "Race not found.";
                 if (race.Status == "Awarded") return "Prizes have already been awarded for this race.";
 
-                var firstPlaceResult = await _context.Results.FirstOrDefaultAsync(r => r.RaceId == raceId && r.RankPosition == 1);
-                if (firstPlaceResult == null) return "Cannot award prizes. No 1st place result found.";
+                var firstPlaceResults = await _context.Results
+                    .Where(r => r.RaceId == raceId && r.RankPosition == 1)
+                    .ToListAsync();
+                if (!firstPlaceResults.Any()) return "Cannot award prizes. No 1st place result found.";
+                
+                var winningParticipantIds = firstPlaceResults.Select(r => r.ParticipantId).ToList();
 
                 var predictions = await _context.Predictions
                     .Include(p => p.Spectator)
@@ -122,7 +126,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
 
                 foreach (var prediction in predictions)
                 {
-                    if (prediction.ParticipantId == firstPlaceResult.ParticipantId)
+                    if (winningParticipantIds.Contains(prediction.ParticipantId))
                     {
                         prediction.Status = "Won";
                         prediction.RewardPoints = prediction.BetPoints * rewardRatio;

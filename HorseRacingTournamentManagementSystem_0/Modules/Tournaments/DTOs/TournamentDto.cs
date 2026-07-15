@@ -27,6 +27,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         public int? Round { get; set; }
         public DateTime? RaceDateTime { get; set; }
         public double? Distance { get; set; }
+        public double? RewardRatio { get; set; }
         public string? Status { get; set; }
         
         public List<RaceParticipantDto> Participants { get; set; } = new List<RaceParticipantDto>();
