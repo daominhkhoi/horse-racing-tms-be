@@ -40,6 +40,10 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         [Range(0, 100000, ErrorMessage = "Distance must be a positive number.")]
         public double? Distance { get; set; }
 
+        [Required(ErrorMessage = "Reward Ratio is required.")]
+        [Range(1.1, 100, ErrorMessage = "Reward Ratio must be between 1.1 and 100.")]
+        public double? RewardRatio { get; set; }
+
         public List<int> RefereeIds { get; set; } = new List<int>();
 
         public List<CreateRaceParticipantDto> Participants { get; set; } = new List<CreateRaceParticipantDto>();

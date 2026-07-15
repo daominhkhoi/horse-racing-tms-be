@@ -18,7 +18,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
         }
 
         [HttpPut("{id}/status")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Referee")]
         public async Task<IActionResult> UpdateRaceStatus(int id, [FromBody] string status)
         {
             try

@@ -101,6 +101,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     Round = r.Round,
                     RaceDateTime = r.RaceDateTime,
                     Distance = r.Distance,
+                    RewardRatio = r.RewardRatio,
                     Status = r.Status,
                     Participants = r.RaceParticipants.Select(p => new RaceParticipantDto
                     {
@@ -156,6 +157,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                         Round = roundNumber++,
                         RaceDateTime = raceDto.RaceDateTime,
                         Distance = raceDto.Distance,
+                        RewardRatio = raceDto.RewardRatio,
                         Status = "Upcoming"
                     };
 
