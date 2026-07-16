@@ -89,6 +89,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Services
             if (horse == null)
                 throw new Exception("Horse not found");
 
+            var verifierExists = await _context.Users.AnyAsync(u => u.UserId == dto.VerifiedBy);
+            if (!verifierExists)
+            {
+                throw new KeyNotFoundException($"Verifying user with ID {dto.VerifiedBy} does not exist.");
+            }
+
             horse.Status = dto.Status;
 
             var latestVerification = horse.HorseVerifications
