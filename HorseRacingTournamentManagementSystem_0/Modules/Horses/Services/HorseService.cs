@@ -67,6 +67,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Services
         {
             return await _context.Horses
                 .Include(h => h.HorseVerifications)
+                .Include(h => h.Owner).ThenInclude(o => o.User)
                 .Where(h => h.OwnerId == ownerId)
                 .OrderByDescending(h => h.HorseId)
                 .ToListAsync();
@@ -76,6 +77,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Services
         {
             return await _context.Horses
                 .Include(h => h.HorseVerifications)
+                .Include(h => h.Owner).ThenInclude(o => o.User)
                 .OrderByDescending(h => h.HorseId)
                 .ToListAsync();
         }
@@ -88,6 +90,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Services
 
             if (horse == null)
                 throw new Exception("Horse not found");
+
+            var verifierExists = await _context.Users.AnyAsync(u => u.UserId == dto.VerifiedBy);
+            if (!verifierExists)
+            {
+                throw new KeyNotFoundException($"Verifying user with ID {dto.VerifiedBy} does not exist.");
+            }
 
             horse.Status = dto.Status;
 

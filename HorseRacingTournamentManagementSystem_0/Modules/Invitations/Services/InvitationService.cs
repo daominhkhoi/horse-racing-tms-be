@@ -87,36 +87,58 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 throw new Exception("Only pending invitations can be canceled.");
             }
 
-            _context.Invitations.Remove(invite);
+            invite.Status = "Cancelled";
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<IEnumerable<InvitationResponse>> GetMyInvitationsAsync(int jockeyId)
+        public async Task<IEnumerable<InvitationResponse>> GetMyInvitationsAsync(int jockeyId, string? status = null)
         {
-            var invites = await _context.Invitations
+            var query = _context.Invitations
                 .Include(i => i.Owner).ThenInclude(o => o.User)
                 .Include(i => i.Jockey).ThenInclude(j => j.User)
                 .Include(i => i.Horse)
                 .Include(i => i.Tour)
-                .Where(i => i.JockeyId == jockeyId)
-                .OrderByDescending(i => i.SentAt)
-                .ToListAsync();
+                .Where(i => i.JockeyId == jockeyId);
 
+            if (!string.IsNullOrEmpty(status))
+            {
+                if (status == "AutoCancelled")
+                {
+                    query = query.Where(i => i.Status == "AutoCancelled" || i.Status == "Auto-Canceled");
+                }
+                else
+                {
+                    query = query.Where(i => i.Status == status);
+                }
+            }
+
+            var invites = await query.OrderByDescending(i => i.SentAt).ToListAsync();
             return invites.Select(MapToResponse);
         }
 
-        public async Task<IEnumerable<InvitationResponse>> GetSentInvitationsAsync(int ownerId)
+        public async Task<IEnumerable<InvitationResponse>> GetSentInvitationsAsync(int ownerId, string? status = null)
         {
-            var invites = await _context.Invitations
+            var query = _context.Invitations
                 .Include(i => i.Owner).ThenInclude(o => o.User)
                 .Include(i => i.Jockey).ThenInclude(j => j.User)
                 .Include(i => i.Horse)
                 .Include(i => i.Tour)
-                .Where(i => i.OwnerId == ownerId)
-                .OrderByDescending(i => i.SentAt)
-                .ToListAsync();
+                .Where(i => i.OwnerId == ownerId);
 
+            if (!string.IsNullOrEmpty(status))
+            {
+                if (status == "AutoCancelled")
+                {
+                    query = query.Where(i => i.Status == "AutoCancelled" || i.Status == "Auto-Canceled");
+                }
+                else
+                {
+                    query = query.Where(i => i.Status == status);
+                }
+            }
+
+            var invites = await query.OrderByDescending(i => i.SentAt).ToListAsync();
             return invites.Select(MapToResponse);
         }
 
@@ -147,7 +169,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
 
                 foreach (var otherInvite in otherPendingInvites)
                 {
-                    otherInvite.Status = "Auto-Canceled";
+                    otherInvite.Status = "AutoCancelled";
                 }
             }
 

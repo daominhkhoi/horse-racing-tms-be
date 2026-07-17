@@ -256,6 +256,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                         Round = roundNumber++,
                         RaceDateTime = raceDto.RaceDateTime,
                         Distance = raceDto.Distance,
+                        RewardRatio = raceDto.RewardRatio,
                         Status = "Upcoming"
                     };
 
@@ -338,6 +339,13 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
             tournament.IsHidden = !tournament.IsHidden;
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<decimal> GetTotalPrizeAsync()
+        {
+            return await _context.Tournaments
+                .Where(t => !t.IsHidden)
+                .SumAsync(t => t.PrizePool ?? 0);
         }
     }
 }

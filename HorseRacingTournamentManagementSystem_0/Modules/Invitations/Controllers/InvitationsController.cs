@@ -22,7 +22,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Controller
 
         private int GetCurrentUserId()
         {
-            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdStr = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (int.TryParse(userIdStr, out int userId))
             {
                 return userId;
@@ -64,12 +64,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Controller
 
         [HttpGet("my")]
         [Authorize(Roles = "Jockey")]
-        public async Task<IActionResult> GetMyInvitations()
+        public async Task<IActionResult> GetMyInvitations([FromQuery] string? status)
         {
             try
             {
                 var jockeyId = GetCurrentUserId();
-                var result = await _invitationService.GetMyInvitationsAsync(jockeyId);
+                var result = await _invitationService.GetMyInvitationsAsync(jockeyId, status);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -80,12 +80,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Controller
 
         [HttpGet("sent")]
         [Authorize(Roles = "HorseOwner")]
-        public async Task<IActionResult> GetSentInvitations()
+        public async Task<IActionResult> GetSentInvitations([FromQuery] string? status)
         {
             try
             {
                 var ownerId = GetCurrentUserId();
-                var result = await _invitationService.GetSentInvitationsAsync(ownerId);
+                var result = await _invitationService.GetSentInvitationsAsync(ownerId, status);
                 return Ok(result);
             }
             catch (Exception ex)

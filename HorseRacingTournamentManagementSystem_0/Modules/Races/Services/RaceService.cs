@@ -25,6 +25,9 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
 
             race.Status = newStatus;
             await _context.SaveChangesAsync();
+            
+            await SyncTournamentStatusAsync(race.TourId);
+
             return true;
         }
 
@@ -144,6 +147,9 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
 
                 race.Status = "Awarded";
                 await _context.SaveChangesAsync();
+                
+                await SyncTournamentStatusAsync(race.TourId);
+
                 await transaction.CommitAsync();
 
                 return "Prizes awarded successfully.";
@@ -153,6 +159,33 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
                 await transaction.RollbackAsync();
                 return "An error occurred while awarding prizes.";
             }
+        }
+        private async Task SyncTournamentStatusAsync(int tourId)
+        {
+            var tournament = await _context.Tournaments
+                .Include(t => t.Races)
+                .FirstOrDefaultAsync(t => t.TourId == tourId);
+
+            if (tournament == null) return;
+            if (!tournament.Races.Any()) return;
+
+            bool allFinished = tournament.Races.All(r => r.Status == "Completed" || r.Status == "Awarded");
+            bool anyActive = tournament.Races.Any(r => r.Status == "Started" || r.Status == "Live" || r.Status == "Ongoing" || r.Status == "Completed" || r.Status == "Awarded");
+
+            if (allFinished)
+            {
+                tournament.Status = "Completed";
+            }
+            else if (anyActive)
+            {
+                tournament.Status = "Live";
+            }
+            else
+            {
+                tournament.Status = "Upcoming";
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }
