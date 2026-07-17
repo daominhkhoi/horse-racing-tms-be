@@ -50,6 +50,8 @@ public partial class HorseRacingDbContext : DbContext
 
     public virtual DbSet<SpectatorProfile> SpectatorProfiles { get; set; }
 
+    public virtual DbSet<TopupTransaction> TopupTransactions { get; set; }
+
     public virtual DbSet<Tournament> Tournaments { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -503,6 +505,26 @@ public partial class HorseRacingDbContext : DbContext
             entity.HasOne(d => d.User).WithOne(p => p.SpectatorProfile)
                 .HasForeignKey<SpectatorProfile>(d => d.UserId)
                 .HasConstraintName("FK__Spectator__UserI__4BAC3F29");
+        });
+
+        modelBuilder.Entity<TopupTransaction>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_TopupTransactions");
+
+            entity.ToTable("TopupTransactions");
+
+            entity.Property(e => e.Amount).HasColumnType("float");
+            entity.Property(e => e.PointsAdded).HasColumnType("float");
+            entity.Property(e => e.VnpTxnRef).HasMaxLength(255);
+            entity.Property(e => e.TransactionDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Status).HasMaxLength(50).HasDefaultValue("Pending");
+
+            entity.HasOne(d => d.Spectator).WithMany(p => p.TopupTransactions)
+                .HasForeignKey(d => d.SpectatorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TopupTransactions_SpectatorProfiles");
         });
 
         modelBuilder.Entity<Tournament>(entity =>
