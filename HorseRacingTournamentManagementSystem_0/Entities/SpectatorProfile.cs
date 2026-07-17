@@ -17,5 +17,7 @@ public partial class SpectatorProfile
 
     public virtual ICollection<RewardTransaction> RewardTransactions { get; set; } = new List<RewardTransaction>();
 
+    public virtual ICollection<TopupTransaction> TopupTransactions { get; set; } = new List<TopupTransaction>();
+
     public virtual User User { get; set; } = null!;
 }

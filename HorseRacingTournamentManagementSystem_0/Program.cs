@@ -47,6 +47,8 @@ builder.Services.AddScoped<IInvitationService, InvitationService>();
 builder.Services.AddScoped<IRaceService, RaceService>();
 // Register PredictionService
 builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Predictions.Interfaces.IPredictionService, HorseRacingTournamentManagementSystem_0.Modules.Predictions.Services.PredictionService>();
+// Register VNPayService
+builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Topups.Services.IVNPayService, HorseRacingTournamentManagementSystem_0.Modules.Topups.Services.VNPayService>();
 // Register DashboardService
 builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Dashboard.Interfaces.IDashboardService, HorseRacingTournamentManagementSystem_0.Modules.Dashboard.Services.DashboardService>();
 
