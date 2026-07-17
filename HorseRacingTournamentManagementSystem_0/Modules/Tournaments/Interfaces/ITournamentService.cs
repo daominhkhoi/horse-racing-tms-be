@@ -13,5 +13,6 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Interfaces
         Task<Tournament> UpdateTournamentAsync(int id, CreateTournamentDto dto);
         Task<bool> CancelTournamentAsync(int id);
         Task<bool> ToggleTournamentHiddenStatusAsync(int id);
+        Task<decimal> GetTotalPrizeAsync();
     }
 }

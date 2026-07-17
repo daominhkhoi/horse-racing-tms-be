@@ -24,7 +24,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Controller
             {
                 bool isAdmin = User.Identity?.IsAuthenticated == true && User.IsInRole("Admin");
                 var result = await _tournamentService.GetAllTournamentsAsync(page, pageSize, search, isAdmin);
-                return Ok(new { message = "Tournaments retrieved successfully", data = result });
+                var totalPrize = await _tournamentService.GetTotalPrizeAsync();
+                return Ok(new { message = "Tournaments retrieved successfully", data = result, totalPrize = totalPrize });
             }
             catch (System.Exception ex)
             {

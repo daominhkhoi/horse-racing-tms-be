@@ -340,5 +340,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<decimal> GetTotalPrizeAsync()
+        {
+            return await _context.Tournaments
+                .Where(t => !t.IsHidden)
+                .SumAsync(t => t.PrizePool ?? 0);
+        }
     }
 }
