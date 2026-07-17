@@ -74,6 +74,10 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Controllers
                 var horse = await _horseService.VerifyHorseAsync(id, dto);
                 return Ok(new { message = "Horse application verified successfully!", data = horse });
             }
+            catch (System.Collections.Generic.KeyNotFoundException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
             catch (System.Exception ex)
             {
                 return StatusCode(500, new { message = "Error verifying horse application", error = ex.Message, innerError = ex.InnerException?.Message });
