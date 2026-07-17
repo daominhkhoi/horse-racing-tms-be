@@ -16,5 +16,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.DTOs
         public string? Message { get; set; }
         public string? Status { get; set; }
         public DateTime? SentAt { get; set; }
+        public int? RaceId { get; set; }
+        public string? RaceName { get; set; }
     }
 }

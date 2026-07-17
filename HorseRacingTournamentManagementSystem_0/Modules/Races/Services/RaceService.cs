@@ -86,8 +86,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
                     HorseName = r.Participant.Horse.HorseName,
                     HorseAvatar = r.Participant.Horse.ImageUrl,
                     JockeyId = r.Participant.JockeyId,
-                    JockeyName = r.Participant.Jockey.User.FullName, // Assuming FullName is in User
-                    JockeyAvatar = r.Participant.Jockey.Avatar,
+                    JockeyName = r.Participant.Jockey != null ? r.Participant.Jockey.User.FullName : null,
+                    JockeyAvatar = r.Participant.Jockey != null ? r.Participant.Jockey.Avatar : null,
                     LaneNumber = r.Participant.LaneNumber,
                     FinishTime = r.FinishTime,
                     RankPosition = r.RankPosition,

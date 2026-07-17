@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HorseRacingTournamentManagementSystem_0.Entities;
@@ -15,6 +15,9 @@ public partial class Invitation
 
     public int TourId { get; set; }
 
+    /// <summary>Nullable – nếu lời mời gắn với Race cụ thể thay vì chỉ Tournament</summary>
+    public int? RaceId { get; set; }
+
     public string? Message { get; set; }
 
     public string? Status { get; set; }
@@ -28,4 +31,6 @@ public partial class Invitation
     public virtual OwnerProfile Owner { get; set; } = null!;
 
     public virtual Tournament Tour { get; set; } = null!;
+
+    public virtual Race? Race { get; set; }
 }

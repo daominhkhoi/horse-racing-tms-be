@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace HorseRacingTournamentManagementSystem_0.Entities;
@@ -11,7 +11,8 @@ public partial class RaceParticipant
 
     public int HorseId { get; set; }
 
-    public int JockeyId { get; set; }
+    /// <summary>Nullable – Jockey được gán sau khi Horse được Approve và Owner mời Jockey thành công</summary>
+    public int? JockeyId { get; set; }
 
     public int? LaneNumber { get; set; }
 
@@ -21,7 +22,7 @@ public partial class RaceParticipant
 
     public virtual Horse Horse { get; set; } = null!;
 
-    public virtual JockeyProfile Jockey { get; set; } = null!;
+    public virtual JockeyProfile? Jockey { get; set; }
 
     public virtual ICollection<Prediction> Predictions { get; set; } = new List<Prediction>();
 
@@ -31,3 +32,4 @@ public partial class RaceParticipant
 
     public virtual ICollection<Violation> Violations { get; set; } = new List<Violation>();
 }
+

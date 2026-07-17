@@ -103,6 +103,9 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     Distance = r.Distance,
                     RewardRatio = r.RewardRatio,
                     Status = r.Status,
+                    MinParticipants = r.MinParticipants,
+                    MaxParticipants = r.MaxParticipants,
+                    CancelReason = r.CancelReason,
                     Participants = r.RaceParticipants.Select(p => new RaceParticipantDto
                     {
                         ParticipantId = p.ParticipantId,
@@ -113,7 +116,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                         JockeyName = p.Jockey?.User?.FullName,
                         JockeyAvatar = p.Jockey?.Avatar,
                         LaneNumber = p.LaneNumber,
-                        ParticipationStatus = p.ParticipationStatus
+                        ParticipationStatus = p.ParticipationStatus,
+                        OwnerId = p.Horse != null ? p.Horse.OwnerId : 0
                     }).ToList(),
                     Referees = r.RefereeAssignments.Select(ra => new RefereeAssignmentDto
                     {
@@ -158,8 +162,11 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                         RaceDateTime = raceDto.RaceDateTime,
                         Distance = raceDto.Distance,
                         RewardRatio = raceDto.RewardRatio,
+                        MinParticipants = raceDto.MinParticipants ?? 4,
+                        MaxParticipants = raceDto.MaxParticipants ?? 12,
                         Status = "Upcoming"
                     };
+
 
                     _context.Races.Add(race);
                     await _context.SaveChangesAsync();
@@ -256,8 +263,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                         Round = roundNumber++,
                         RaceDateTime = raceDto.RaceDateTime,
                         Distance = raceDto.Distance,
+                        RewardRatio = raceDto.RewardRatio,
+                        MinParticipants = raceDto.MinParticipants ?? 4,
+                        MaxParticipants = raceDto.MaxParticipants ?? 12,
                         Status = "Upcoming"
                     };
+
 
                     _context.Races.Add(race);
                     await _context.SaveChangesAsync();

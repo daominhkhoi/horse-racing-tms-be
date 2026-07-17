@@ -29,8 +29,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         public double? Distance { get; set; }
         public double? RewardRatio { get; set; }
         public string? Status { get; set; }
+        public int? MinParticipants { get; set; }
+        public int? MaxParticipants { get; set; }
+        public string? CancelReason { get; set; }
         
         public List<RaceParticipantDto> Participants { get; set; } = new List<RaceParticipantDto>();
+
         public List<RefereeAssignmentDto> Referees { get; set; } = new List<RefereeAssignmentDto>();
     }
 
@@ -40,11 +44,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         public int HorseId { get; set; }
         public string? HorseName { get; set; }
         public string? HorseAvatar { get; set; }
-        public int JockeyId { get; set; }
+        public int? JockeyId { get; set; }
         public string? JockeyName { get; set; }
         public string? JockeyAvatar { get; set; }
         public int? LaneNumber { get; set; }
         public string? ParticipationStatus { get; set; }
+        public int OwnerId { get; set; }
     }
 
     public class RefereeAssignmentDto

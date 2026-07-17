@@ -21,6 +21,12 @@ public partial class Race
 
     public double? RewardRatio { get; set; }
 
+    public int? MinParticipants { get; set; } = 4;
+
+    public int? MaxParticipants { get; set; } = 12;
+
+    public string? CancelReason { get; set; }
+
     public virtual ICollection<Prediction> Predictions { get; set; } = new List<Prediction>();
 
     public virtual ICollection<RaceParticipant> RaceParticipants { get; set; } = new List<RaceParticipant>();
@@ -30,6 +36,8 @@ public partial class Race
     public virtual ICollection<Result> Results { get; set; } = new List<Result>();
 
     public virtual Tournament Tour { get; set; } = null!;
+
+    public virtual ICollection<RaceRegistration> RaceRegistrations { get; set; } = new List<RaceRegistration>();
 
     public virtual ICollection<Violation> Violations { get; set; } = new List<Violation>();
 }

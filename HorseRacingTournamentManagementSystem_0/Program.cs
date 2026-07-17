@@ -45,8 +45,12 @@ builder.Services.AddScoped<IJockeyService, JockeyService>();
 builder.Services.AddScoped<IInvitationService, InvitationService>();
 // Register RaceService
 builder.Services.AddScoped<IRaceService, RaceService>();
+// Register RaceRegistrationService
+builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Races.Interfaces.IRaceRegistrationService, HorseRacingTournamentManagementSystem_0.Modules.Races.Services.RaceRegistrationService>();
 // Register PredictionService
 builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Predictions.Interfaces.IPredictionService, HorseRacingTournamentManagementSystem_0.Modules.Predictions.Services.PredictionService>();
+// Register RaceAutoCheckService (Background Service)
+builder.Services.AddHostedService<HorseRacingTournamentManagementSystem_0.Modules.Races.Services.RaceAutoCheckService>();
 
 // --- Code cắm Database đã có sẵn của bạn ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

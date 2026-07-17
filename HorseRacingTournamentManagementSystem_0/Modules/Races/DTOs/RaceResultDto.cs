@@ -23,7 +23,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.DTOs
         public int HorseId { get; set; }
         public string? HorseName { get; set; }
         public string? HorseAvatar { get; set; }
-        public int JockeyId { get; set; }
+        public int? JockeyId { get; set; }
         public string? JockeyName { get; set; }
         public string? JockeyAvatar { get; set; }
         public int? LaneNumber { get; set; }

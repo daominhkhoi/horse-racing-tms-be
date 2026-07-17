@@ -39,10 +39,30 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 throw new Exception("Tournament not found.");
             }
 
+            // Validate RaceId if provided
+            if (request.RaceId.HasValue)
+            {
+                var race = await _context.Races.FirstOrDefaultAsync(r => r.RaceId == request.RaceId.Value);
+                if (race == null)
+                    throw new Exception("Race not found.");
+
+                if (race.Status == "Cancelled")
+                    throw new Exception("Cannot send invitation for a cancelled race.");
+
+                // Check horse has approved registration for this race
+                var approvedReg = await _context.RaceRegistrations
+                    .AnyAsync(r => r.RaceId == request.RaceId.Value
+                                && r.HorseId == request.HorseId
+                                && r.Status == "Approved");
+                if (!approvedReg)
+                    throw new Exception("Horse must be approved for this race before inviting a jockey.");
+            }
+
             var existingInvite = await _context.Invitations
                 .FirstOrDefaultAsync(i => i.JockeyId == request.JockeyId 
                                        && i.HorseId == request.HorseId 
                                        && i.TourId == request.TourId 
+                                       && (request.RaceId == null || i.RaceId == request.RaceId)
                                        && i.Status == "Pending");
             if (existingInvite != null)
             {
@@ -55,6 +75,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 JockeyId = request.JockeyId,
                 HorseId = request.HorseId,
                 TourId = request.TourId,
+                RaceId = request.RaceId,
                 Message = request.Message,
                 Status = "Pending",
                 SentAt = DateTime.UtcNow
@@ -69,6 +90,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 .Include(i => i.Jockey).ThenInclude(j => j.User)
                 .Include(i => i.Horse)
                 .Include(i => i.Tour)
+                .Include(i => i.Race)
                 .FirstOrDefaultAsync(i => i.InviteId == invitation.InviteId);
 
             return MapToResponse(newInvite);
@@ -99,6 +121,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 .Include(i => i.Jockey).ThenInclude(j => j.User)
                 .Include(i => i.Horse)
                 .Include(i => i.Tour)
+                .Include(i => i.Race)
                 .Where(i => i.JockeyId == jockeyId);
 
             if (!string.IsNullOrEmpty(status))
@@ -124,6 +147,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 .Include(i => i.Jockey).ThenInclude(j => j.User)
                 .Include(i => i.Horse)
                 .Include(i => i.Tour)
+                .Include(i => i.Race)
                 .Where(i => i.OwnerId == ownerId);
 
             if (!string.IsNullOrEmpty(status))
@@ -171,6 +195,21 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 {
                     otherInvite.Status = "AutoCancelled";
                 }
+
+                // If invitation has RaceId, update the corresponding RaceParticipant with JockeyId
+                if (invite.RaceId.HasValue)
+                {
+                    var participant = await _context.RaceParticipants
+                        .FirstOrDefaultAsync(p => p.RaceId == invite.RaceId.Value
+                                               && p.HorseId == invite.HorseId
+                                               && p.JockeyId == null);
+
+                    if (participant != null)
+                    {
+                        participant.JockeyId = jockeyId;
+                        participant.ParticipationStatus = "Confirmed";
+                    }
+                }
             }
 
             await _context.SaveChangesAsync();
@@ -192,7 +231,9 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 TourName = invite.Tour?.TourName ?? "Unknown Tournament",
                 Message = invite.Message,
                 Status = invite.Status,
-                SentAt = invite.SentAt
+                SentAt = invite.SentAt,
+                RaceId = invite.RaceId,
+                RaceName = invite.Race?.RaceName
             };
         }
     }

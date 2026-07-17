@@ -34,6 +34,8 @@ public partial class HorseRacingDbContext : DbContext
 
     public virtual DbSet<RaceParticipant> RaceParticipants { get; set; }
 
+    public virtual DbSet<RaceRegistration> RaceRegistrations { get; set; }
+
     public virtual DbSet<RefereeAssignment> RefereeAssignments { get; set; }
 
     public virtual DbSet<RefereeProfile> RefereeProfiles { get; set; }
@@ -154,6 +156,7 @@ public partial class HorseRacingDbContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.TourId).HasColumnName("TourID");
+            entity.Property(e => e.RaceId).HasColumnName("RaceID");
 
             entity.HasOne(d => d.Horse).WithMany(p => p.Invitations)
                 .HasForeignKey(d => d.HorseId)
@@ -174,6 +177,12 @@ public partial class HorseRacingDbContext : DbContext
                 .HasForeignKey(d => d.TourId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Invitatio__TourI__02084FDA");
+
+            entity.HasOne(d => d.Race).WithMany()
+                .HasForeignKey(d => d.RaceId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Invitations_Races")
+                .IsRequired(false);
         });
 
         modelBuilder.Entity<JockeyProfile>(entity =>
@@ -285,6 +294,10 @@ public partial class HorseRacingDbContext : DbContext
                 .HasForeignKey(d => d.TourId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Races__TourID__5812160E");
+
+            entity.Property(e => e.MinParticipants).HasDefaultValue(4);
+            entity.Property(e => e.MaxParticipants).HasDefaultValue(12);
+            entity.Property(e => e.CancelReason).HasMaxLength(500);
         });
 
         modelBuilder.Entity<RaceParticipant>(entity =>
@@ -316,6 +329,41 @@ public partial class HorseRacingDbContext : DbContext
                 .HasForeignKey(d => d.RaceId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Race_Part__RaceI__60A75C0F");
+        });
+
+        modelBuilder.Entity<RaceRegistration>(entity =>
+        {
+            entity.HasKey(e => e.RegistrationId).HasName("PK__Race_Reg__RegistrationID");
+
+            entity.ToTable("Race_Registrations");
+
+            entity.Property(e => e.RegistrationId).HasColumnName("RegistrationID");
+            entity.Property(e => e.RaceId).HasColumnName("RaceID");
+            entity.Property(e => e.HorseId).HasColumnName("HorseID");
+            entity.Property(e => e.OwnerId).HasColumnName("OwnerID");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.RegisteredAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ReviewedAt).HasColumnType("datetime");
+            entity.Property(e => e.ReviewNote).HasMaxLength(500);
+
+            entity.HasIndex(e => new { e.RaceId, e.HorseId }, "UQ_RaceReg_Race_Horse").IsUnique();
+
+            entity.HasOne(d => d.Race).WithMany(p => p.RaceRegistrations)
+                .HasForeignKey(d => d.RaceId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RaceReg_Race");
+
+            entity.HasOne(d => d.Horse).WithMany()
+                .HasForeignKey(d => d.HorseId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RaceReg_Horse");
+
+            entity.HasOne(d => d.Owner).WithMany()
+                .HasForeignKey(d => d.OwnerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RaceReg_Owner");
         });
 
         modelBuilder.Entity<RefereeAssignment>(entity =>

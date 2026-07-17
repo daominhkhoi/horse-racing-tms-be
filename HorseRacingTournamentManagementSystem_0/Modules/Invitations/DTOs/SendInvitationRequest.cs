@@ -13,6 +13,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.DTOs
         [Required]
         public int TourId { get; set; }
 
+        public int? RaceId { get; set; }
+
         public string? Message { get; set; }
     }
 }
