@@ -5,5 +5,5 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Shared.Services;
 
 public interface ICloudinaryService
 {
-    Task<string?> UploadImageAsync(IFormFile file);
+    Task<string?> UploadImageAsync(IFormFile file, bool isBanner = false);
 }

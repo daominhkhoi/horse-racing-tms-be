@@ -22,7 +22,7 @@ public class CloudinaryService : ICloudinaryService
         _cloudinary = new Cloudinary(account);
     }
 
-    public async Task<string?> UploadImageAsync(IFormFile file)
+    public async Task<string?> UploadImageAsync(IFormFile file, bool isBanner = false)
     {
         if (file.Length == 0) return null;
 
@@ -30,10 +30,15 @@ public class CloudinaryService : ICloudinaryService
 
         using (var stream = file.OpenReadStream())
         {
+            var transformation = isBanner
+                // Keep the complete wide image and only scale it down when necessary.
+                ? new Transformation().Width(1920).Height(800).Crop("limit").Quality("auto").FetchFormat("auto")
+                : new Transformation().Height(500).Width(500).Crop("fill").Gravity("face");
+
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(file.FileName, stream),
-                Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face")
+                Transformation = transformation
             };
 
             uploadResult = await _cloudinary.UploadAsync(uploadParams);
