@@ -15,5 +15,7 @@ public partial class OwnerProfile
 
     public virtual ICollection<Invitation> Invitations { get; set; } = new List<Invitation>();
 
+    public virtual ICollection<RaceRegistration> RaceRegistrations { get; set; } = new List<RaceRegistration>();
+
     public virtual User User { get; set; } = null!;
 }

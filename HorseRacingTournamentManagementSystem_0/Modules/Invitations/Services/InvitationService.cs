@@ -2,6 +2,7 @@ using HorseRacingTournamentManagementSystem_0.Database;
 using HorseRacingTournamentManagementSystem_0.Entities;
 using HorseRacingTournamentManagementSystem_0.Modules.Invitations.DTOs;
 using HorseRacingTournamentManagementSystem_0.Modules.Invitations.Interfaces;
+using HorseRacingTournamentManagementSystem_0.Modules.Races.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
     public class InvitationService : IInvitationService
     {
         private readonly HorseRacingDbContext _context;
+        private readonly IRaceRegistrationService _raceRegistrationService;
 
-        public InvitationService(HorseRacingDbContext context)
+        public InvitationService(HorseRacingDbContext context, IRaceRegistrationService raceRegistrationService)
         {
             _context = context;
+            _raceRegistrationService = raceRegistrationService;
         }
 
         public async Task<InvitationResponse> SendInvitationAsync(int ownerId, SendInvitationRequest request)
@@ -38,6 +41,15 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
             {
                 throw new Exception("Tournament not found.");
             }
+
+            if (!await _raceRegistrationService.HasApprovedRegistrationAsync(ownerId, request.HorseId, request.TourId))
+                throw new Exception("Horse registration must be approved by an admin before inviting a jockey.");
+
+            if (await _context.Invitations.AnyAsync(i => i.HorseId == request.HorseId && i.TourId == request.TourId && (i.Status == "Accepted" || i.Status == "AcceptedPendingAdmin")))
+                throw new Exception("This horse already has a jockey confirmation awaiting or approved by admin.");
+
+            if (await _context.Invitations.AnyAsync(i => i.JockeyId == request.JockeyId && i.TourId == request.TourId && (i.Status == "Accepted" || i.Status == "AcceptedPendingAdmin")))
+                throw new Exception("This jockey already confirmed another horse in this tournament.");
 
             var existingInvite = await _context.Invitations
                 .FirstOrDefaultAsync(i => i.JockeyId == request.JockeyId 
@@ -155,23 +167,52 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 throw new Exception("This invitation has already been processed.");
             }
 
-            invite.Status = isAccepted ? "Accepted" : "Rejected";
+            if (isAccepted)
+            {
+                var jockeyAlreadyCommitted = await _context.Invitations.AnyAsync(i =>
+                    i.TourId == invite.TourId &&
+                    i.JockeyId == jockeyId &&
+                    i.InviteId != inviteId &&
+                    (i.Status == "AcceptedPendingAdmin" || i.Status == "Accepted"));
+                if (jockeyAlreadyCommitted)
+                    throw new Exception("You already confirmed another horse in this tournament.");
+            }
+
+            invite.Status = isAccepted ? "AcceptedPendingAdmin" : "Rejected";
 
             if (isAccepted)
             {
-                // Auto-cancel other pending invitations for this horse and tournament
+                // One horse can only have one jockey, and one jockey can only
+                // ride one horse in the same tournament. Cancel both kinds of
+                // conflicting invitations as soon as a jockey confirms.
                 var otherPendingInvites = await _context.Invitations
-                    .Where(i => i.HorseId == invite.HorseId 
-                             && i.TourId == invite.TourId 
+                    .Where(i => i.TourId == invite.TourId
                              && i.Status == "Pending" 
-                             && i.InviteId != inviteId)
+                             && i.InviteId != inviteId
+                             && (i.HorseId == invite.HorseId || i.JockeyId == jockeyId))
                     .ToListAsync();
 
                 foreach (var otherInvite in otherPendingInvites)
                 {
                     otherInvite.Status = "AutoCancelled";
                 }
+
             }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ReviewAcceptedInvitationAsync(int inviteId, bool approved)
+        {
+            var invite = await _context.Invitations.FirstOrDefaultAsync(i => i.InviteId == inviteId)
+                ?? throw new Exception("Invitation not found.");
+            if (invite.Status != "AcceptedPendingAdmin")
+                throw new Exception("Only a jockey-confirmed invitation can be reviewed.");
+
+            invite.Status = approved ? "Accepted" : "AdminRejected";
+            if (approved)
+                await _raceRegistrationService.SyncAcceptedInvitationAsync(invite.HorseId, invite.JockeyId, invite.TourId);
 
             await _context.SaveChangesAsync();
             return true;
@@ -192,7 +233,11 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 TourName = invite.Tour?.TourName ?? "Unknown Tournament",
                 Message = invite.Message,
                 Status = invite.Status,
-                SentAt = invite.SentAt
+                // SQL Server `datetime` does not retain DateTimeKind. Mark the
+                // stored UTC value explicitly so JSON includes the `Z` suffix.
+                SentAt = invite.SentAt.HasValue
+                    ? DateTime.SpecifyKind(invite.SentAt.Value, DateTimeKind.Utc)
+                    : null
             };
         }
     }

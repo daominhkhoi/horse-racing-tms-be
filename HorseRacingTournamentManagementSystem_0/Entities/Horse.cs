@@ -39,4 +39,6 @@ public partial class Horse
     public virtual OwnerProfile Owner { get; set; } = null!;
 
     public virtual ICollection<RaceParticipant> RaceParticipants { get; set; } = new List<RaceParticipant>();
+
+    public virtual ICollection<RaceRegistration> RaceRegistrations { get; set; } = new List<RaceRegistration>();
 }

@@ -14,6 +14,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         public string? Status { get; set; }
         public bool IsHidden { get; set; }
         public string? BannerUrl { get; set; }
+        public int ParticipantCount { get; set; }
     }
 
     public class TournamentDetailDto : TournamentDto
@@ -30,6 +31,9 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         public double? Distance { get; set; }
         public double? RewardRatio { get; set; }
         public string? Status { get; set; }
+        public int MinParticipants { get; set; }
+        public int MaxParticipants { get; set; }
+        public string? CancelReason { get; set; }
         
         public List<RaceParticipantDto> Participants { get; set; } = new List<RaceParticipantDto>();
         public List<RefereeAssignmentDto> Referees { get; set; } = new List<RefereeAssignmentDto>();

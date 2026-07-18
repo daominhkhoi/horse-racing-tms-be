@@ -22,8 +22,8 @@ public class PredictionService : IPredictionService
         {
             var race = await _context.Races.FirstOrDefaultAsync(r => r.RaceId == request.RaceId);
             if (race == null) return "Race not found.";
-            if (race.Status == "Started" || race.Status == "Finished" || race.Status == "Awarded" || race.Status == "Result_Pending")
-                return "Cannot bet on a race that has already started or finished.";
+            if (race.Status != "Open Registration")
+                return "Betting is only available while race registration is open.";
             if (race.RaceDateTime.HasValue && race.RaceDateTime.Value <= DateTime.Now)
                 return "Race time has passed.";
 
@@ -88,8 +88,8 @@ public class PredictionService : IPredictionService
             if (prediction.Status != "Active") return "Can only cancel active bets.";
 
             var race = prediction.Race;
-            if (race.Status == "Started" || race.Status == "Finished" || race.Status == "Awarded" || race.Status == "Result_Pending")
-                return "Cannot cancel bet. The race has already started or finished.";
+            if (race.Status != "Open Registration")
+                return "Cannot cancel bet after betting has closed.";
             if (race.RaceDateTime.HasValue && race.RaceDateTime.Value <= DateTime.Now)
                 return "Cannot cancel bet. The race time has passed.";
 

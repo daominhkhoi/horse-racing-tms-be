@@ -36,6 +36,8 @@ public partial class HorseRacingDbContext : DbContext
 
     public virtual DbSet<RaceParticipant> RaceParticipants { get; set; }
 
+    public virtual DbSet<RaceRegistration> RaceRegistrations { get; set; }
+
     public virtual DbSet<RefereeAssignment> RefereeAssignments { get; set; }
 
     public virtual DbSet<RefereeProfile> RefereeProfiles { get; set; }
@@ -154,7 +156,7 @@ public partial class HorseRacingDbContext : DbContext
             entity.Property(e => e.JockeyId).HasColumnName("JockeyID");
             entity.Property(e => e.OwnerId).HasColumnName("OwnerID");
             entity.Property(e => e.SentAt)
-                .HasDefaultValueSql("(getdate())")
+                .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.TourId).HasColumnName("TourID");
@@ -178,6 +180,26 @@ public partial class HorseRacingDbContext : DbContext
                 .HasForeignKey(d => d.TourId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Invitatio__TourI__02084FDA");
+        });
+
+        modelBuilder.Entity<RaceRegistration>(entity =>
+        {
+            entity.HasKey(e => e.RegistrationId);
+            entity.ToTable("Race_Registrations");
+            entity.Property(e => e.RegistrationId).HasColumnName("RegistrationID");
+            entity.Property(e => e.RaceId).HasColumnName("RaceID");
+            entity.Property(e => e.HorseId).HasColumnName("HorseID");
+            entity.Property(e => e.OwnerId).HasColumnName("OwnerID");
+            entity.Property(e => e.ReviewedBy).HasColumnName("ReviewedBy");
+            entity.Property(e => e.RegisterTime).HasColumnName("RegisteredAt").HasColumnType("datetime");
+            entity.Property(e => e.ReviewedAt).HasColumnType("datetime");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.RejectReason).HasColumnName("ReviewNote").HasMaxLength(1000);
+            entity.HasIndex(e => new { e.RaceId, e.HorseId }).IsUnique();
+            entity.HasOne(e => e.Race).WithMany(r => r.RaceRegistrations).HasForeignKey(e => e.RaceId).OnDelete(DeleteBehavior.ClientSetNull);
+            entity.HasOne(e => e.Horse).WithMany(h => h.RaceRegistrations).HasForeignKey(e => e.HorseId).OnDelete(DeleteBehavior.ClientSetNull);
+            entity.HasOne(e => e.Owner).WithMany(o => o.RaceRegistrations).HasForeignKey(e => e.OwnerId).OnDelete(DeleteBehavior.ClientSetNull);
+            entity.HasOne(e => e.ReviewedByNavigation).WithMany().HasForeignKey(e => e.ReviewedBy).OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<JockeyProfile>(entity =>

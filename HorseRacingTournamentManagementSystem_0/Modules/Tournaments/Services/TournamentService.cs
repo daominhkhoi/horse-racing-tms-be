@@ -51,7 +51,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     PrizePool = t.PrizePool,
                     Status = t.Status,
                     IsHidden = t.IsHidden,
-                    BannerUrl = t.BannerUrl
+                    BannerUrl = t.BannerUrl,
+                    ParticipantCount = t.Races.SelectMany(r => r.RaceParticipants).Count()
                 })
                 .ToListAsync();
 
@@ -96,6 +97,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                 Status = tournament.Status,
                 IsHidden = tournament.IsHidden,
                 BannerUrl = tournament.BannerUrl,
+                ParticipantCount = tournament.Races.Sum(r => r.RaceParticipants.Count),
                 Races = tournament.Races.Select(r => new RaceDto
                 {
                     RaceId = r.RaceId,
@@ -105,6 +107,9 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     Distance = r.Distance,
                     RewardRatio = r.RewardRatio,
                     Status = r.Status,
+                    MinParticipants = r.MinParticipants,
+                    MaxParticipants = r.MaxParticipants,
+                    CancelReason = r.CancelReason,
                     Participants = r.RaceParticipants.Select(p => new RaceParticipantDto
                     {
                         ParticipantId = p.ParticipantId,
@@ -161,7 +166,9 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                         RaceDateTime = raceDto.RaceDateTime,
                         Distance = raceDto.Distance,
                         RewardRatio = raceDto.RewardRatio,
-                        Status = "Upcoming"
+                        Status = "Open Registration",
+                        MinParticipants = raceDto.MinParticipants,
+                        MaxParticipants = raceDto.MaxParticipants
                     };
 
                     _context.Races.Add(race);
@@ -261,7 +268,9 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                         RaceDateTime = raceDto.RaceDateTime,
                         Distance = raceDto.Distance,
                         RewardRatio = raceDto.RewardRatio,
-                        Status = "Upcoming"
+                        Status = "Open Registration",
+                        MinParticipants = raceDto.MinParticipants,
+                        MaxParticipants = raceDto.MaxParticipants
                     };
 
                     _context.Races.Add(race);

@@ -109,6 +109,21 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Controller
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPut("{id}/admin-review")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AdminReview(int id, [FromBody] RespondInvitationRequest request)
+        {
+            try
+            {
+                var result = await _invitationService.ReviewAcceptedInvitationAsync(id, request.IsAccepted);
+                return Ok(new { success = result, message = request.IsAccepted ? "Jockey approved and assigned to a lane." : "Jockey assignment rejected." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 
     public class RespondInvitationRequest

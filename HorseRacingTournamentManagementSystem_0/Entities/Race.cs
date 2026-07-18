@@ -23,9 +23,17 @@ public partial class Race
 
     public string? YoutubeId { get; set; }
 
+    public int MinParticipants { get; set; } = 2;
+
+    public int MaxParticipants { get; set; } = 8;
+
+    public string? CancelReason { get; set; }
+
     public virtual ICollection<Prediction> Predictions { get; set; } = new List<Prediction>();
 
     public virtual ICollection<RaceParticipant> RaceParticipants { get; set; } = new List<RaceParticipant>();
+
+    public virtual ICollection<RaceRegistration> RaceRegistrations { get; set; } = new List<RaceRegistration>();
 
     public virtual ICollection<RefereeAssignment> RefereeAssignments { get; set; } = new List<RefereeAssignment>();
 

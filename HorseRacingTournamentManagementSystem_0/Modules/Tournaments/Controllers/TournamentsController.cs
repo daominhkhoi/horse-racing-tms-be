@@ -8,6 +8,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Referee,HorseOwner,Jockey,Spectator")]
     public class TournamentsController : ControllerBase
     {
         private readonly ITournamentService _tournamentService;
@@ -48,6 +49,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Controller
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateTournament([FromBody] CreateTournamentDto dto)
         {
             if (!ModelState.IsValid)
