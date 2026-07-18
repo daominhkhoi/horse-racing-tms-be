@@ -149,6 +149,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -166,4 +168,5 @@ app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<HorseRacingTournamentManagementSystem_0.Hubs.SpectatorChatHub>("/chatHub");
 app.Run();

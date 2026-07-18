@@ -31,4 +31,6 @@ public partial class User
     public virtual Role Role { get; set; } = null!;
 
     public virtual SpectatorProfile? SpectatorProfile { get; set; }
+
+    public virtual ICollection<RaceComment> RaceComments { get; set; } = new List<RaceComment>();
 }

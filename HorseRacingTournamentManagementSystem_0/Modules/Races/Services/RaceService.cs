@@ -187,5 +187,125 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> UpdateYoutubeIdAsync(int raceId, string youtubeId)
+        {
+            var race = await _context.Races.FindAsync(raceId);
+            if (race == null) return false;
+
+            race.YoutubeId = youtubeId;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<List<RaceStreamDto>> GetActiveStreamsAsync()
+        {
+            var races = await _context.Races
+                .Include(r => r.Tour)
+                .Where(r => r.Status == "LIVE" || r.Status == "UPCOMING")
+                .ToListAsync();
+
+            var dtos = races.Select(r => new RaceStreamDto
+            {
+                RaceId = r.RaceId,
+                RaceName = r.RaceName,
+                Track = r.Tour != null ? r.Tour.Location : "Unknown Track",
+                Time = r.RaceDateTime.HasValue ? r.RaceDateTime.Value.ToString("HH:mm") : "TBD",
+                Prize = r.Tour != null ? "$" + (r.Tour.PrizePool.HasValue ? r.Tour.PrizePool.Value.ToString("N0") : "0") : "$0",
+                Status = r.Status,
+                YoutubeId = r.YoutubeId,
+                Leader = "N/A",
+                Viewers = r.Status == "LIVE" ? "Live" : "Waiting",
+                TournamentName = r.Tour != null ? r.Tour.TourName : "Unknown Tournament"
+            }).ToList();
+            
+            return dtos;
+        }
+
+        public async Task<List<object>> GetRaceCommentsAsync(int raceId)
+        {
+            var comments = await _context.RaceComments
+                .Include(c => c.User)
+                .Where(c => c.RaceId == raceId)
+                .OrderBy(c => c.CreatedAt)
+                .ToListAsync();
+
+            return comments.Select(c => new
+                {
+                    user = c.User?.FullName ?? "Unknown",
+                    text = c.Content,
+                    time = c.CreatedAt.HasValue ? c.CreatedAt.Value.AddHours(7).ToString("HH:mm") : "Unknown",
+                    hot = false
+                }).Cast<object>().ToList();
+        }
+
+        public async Task<List<RefereeRaceDto>> GetRacesForRefereeAsync(int userId, bool isAdmin)
+        {
+            var query = _context.Races
+                .Include(r => r.Tour)
+                .Include(r => r.RaceParticipants)
+                .Include(r => r.Violations)
+                .Include(r => r.RefereeAssignments)
+                .AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(r => r.RefereeAssignments.Any(a => a.RefereeId == userId));
+            }
+
+            var races = await query.OrderByDescending(r => r.RaceDateTime).ToListAsync();
+
+            return races.Select(r => new RefereeRaceDto
+            {
+                RaceId = r.RaceId,
+                RaceName = r.RaceName ?? "Unknown Race",
+                TournamentId = r.TourId,
+                TournamentName = r.Tour?.TourName ?? "Unknown Tournament",
+                TournamentBanner = r.Tour?.BannerUrl,
+                Track = r.Tour?.Location ?? "Unknown Track",
+                Status = r.Status ?? "Pending",
+                HorsesCount = r.RaceParticipants.Count,
+                Laps = r.Round?.ToString() ?? "0",
+                Leader = "—",
+                IncidentsCount = r.Violations.Count
+            }).ToList();
+        }
+
+        public async Task<List<RefereeParticipantDto>> GetRaceParticipantsAsync(int raceId)
+        {
+            var participants = await _context.RaceParticipants
+                .Include(p => p.Horse)
+                .Include(p => p.Jockey)
+                    .ThenInclude(j => j.User)
+                .Where(p => p.RaceId == raceId)
+                .ToListAsync();
+
+            return participants.Select(p => new RefereeParticipantDto
+            {
+                ParticipantId = p.ParticipantId,
+                HorseName = p.Horse?.HorseName ?? "Unknown Horse",
+                JockeyName = p.Jockey?.User?.FullName ?? "Unknown Jockey" // Assuming Jockey has User relation if FullName is needed. Let's check this or use fallback.
+            }).ToList();
+        }
+
+        public async Task<bool> ReportIncidentAsync(int raceId, int refereeId, CreateViolationDto dto)
+        {
+            var race = await _context.Races.FindAsync(raceId);
+            if (race == null) return false;
+
+            var violation = new HorseRacingTournamentManagementSystem_0.Entities.Violation
+            {
+                RaceId = raceId,
+                ParticipantId = dto.ParticipantId,
+                RefereeId = refereeId,
+                ViolationType = dto.ViolationType,
+                Penalty = dto.Penalty,
+                Description = dto.Description
+            };
+
+            _context.Violations.Add(violation);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

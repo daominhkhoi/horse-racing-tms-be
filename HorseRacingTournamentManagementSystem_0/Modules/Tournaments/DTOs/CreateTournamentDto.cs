@@ -14,6 +14,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         [StringLength(255, ErrorMessage = "Location cannot exceed 255 characters.")]
         public string? Location { get; set; }
 
+        public string? BannerUrl { get; set; }
+
         [Required(ErrorMessage = "Start Date is required.")]
         public DateOnly? StartDate { get; set; }
 
