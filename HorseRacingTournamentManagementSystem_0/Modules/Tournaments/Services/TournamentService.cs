@@ -50,7 +50,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     Location = t.Location,
                     PrizePool = t.PrizePool,
                     Status = t.Status,
-                    IsHidden = t.IsHidden
+                    IsHidden = t.IsHidden,
+                    BannerUrl = t.BannerUrl
                 })
                 .ToListAsync();
 
@@ -94,6 +95,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                 PrizePool = tournament.PrizePool,
                 Status = tournament.Status,
                 IsHidden = tournament.IsHidden,
+                BannerUrl = tournament.BannerUrl,
                 Races = tournament.Races.Select(r => new RaceDto
                 {
                     RaceId = r.RaceId,
@@ -141,6 +143,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     StartDate = dto.StartDate,
                     EndDate = dto.EndDate,
                     PrizePool = dto.PrizePool,
+                    BannerUrl = dto.BannerUrl,
                     Status = "Upcoming"
                 };
 
@@ -234,6 +237,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                 tournament.StartDate = dto.StartDate;
                 tournament.EndDate = dto.EndDate;
                 tournament.PrizePool = dto.PrizePool;
+                tournament.BannerUrl = dto.BannerUrl;
 
                 // Remove old races (cascade delete will handle participants and referees if configured, otherwise manual delete)
                 // EF Core usually handles deleting dependents if configured, but to be safe, we explicitly remove them:

@@ -21,6 +21,8 @@ public partial class Race
 
     public double? RewardRatio { get; set; }
 
+    public string? YoutubeId { get; set; }
+
     public virtual ICollection<Prediction> Predictions { get; set; } = new List<Prediction>();
 
     public virtual ICollection<RaceParticipant> RaceParticipants { get; set; } = new List<RaceParticipant>();
@@ -32,4 +34,6 @@ public partial class Race
     public virtual Tournament Tour { get; set; } = null!;
 
     public virtual ICollection<Violation> Violations { get; set; } = new List<Violation>();
+
+    public virtual ICollection<RaceComment> RaceComments { get; set; } = new List<RaceComment>();
 }

@@ -21,6 +21,8 @@ public partial class Tournament
 
     public bool IsHidden { get; set; }
 
+    public string? BannerUrl { get; set; }
+
     public virtual ICollection<Invitation> Invitations { get; set; } = new List<Invitation>();
 
     public virtual ICollection<Leaderboard> Leaderboards { get; set; } = new List<Leaderboard>();

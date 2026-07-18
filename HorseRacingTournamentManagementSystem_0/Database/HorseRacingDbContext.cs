@@ -32,6 +32,8 @@ public partial class HorseRacingDbContext : DbContext
 
     public virtual DbSet<Race> Races { get; set; }
 
+    public virtual DbSet<RaceComment> RaceComments { get; set; }
+
     public virtual DbSet<RaceParticipant> RaceParticipants { get; set; }
 
     public virtual DbSet<RefereeAssignment> RefereeAssignments { get; set; }
@@ -286,7 +288,27 @@ public partial class HorseRacingDbContext : DbContext
             entity.HasOne(d => d.Tour).WithMany(p => p.Races)
                 .HasForeignKey(d => d.TourId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Races__TourID__5812160E");
+                .HasConstraintName("FK__Races__TourId__5165187F");
+        });
+
+        modelBuilder.Entity<RaceComment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_RaceComments");
+
+            entity.ToTable("RaceComments");
+
+            entity.Property(e => e.Content).HasMaxLength(500);
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Race).WithMany(p => p.RaceComments)
+                .HasForeignKey(d => d.RaceId)
+                .HasConstraintName("FK_RaceComments_Races");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RaceComments)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_RaceComments_Users");
         });
 
         modelBuilder.Entity<RaceParticipant>(entity =>
