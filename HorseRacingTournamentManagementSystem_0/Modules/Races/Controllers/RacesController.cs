@@ -101,7 +101,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
         }
 
         [HttpPut("{id}/youtube-id")]
-        [Authorize(Roles = "Admin,Referee")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateYoutubeId(int id, [FromBody] string youtubeId)
         {
             try

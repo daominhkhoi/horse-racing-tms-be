@@ -202,7 +202,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
         {
             var races = await _context.Races
                 .Include(r => r.Tour)
-                .Where(r => r.Status == "LIVE" || r.Status == "UPCOMING")
+                .Where(r => r.Status == "LIVE"
+                    || r.Status == "UPCOMING"
+                    || r.Status == "Racing"
+                    || r.Status == "Open Registration"
+                    || r.Status == "Registration Closed"
+                    || r.Status == "Ready To Start")
                 .ToListAsync();
 
             var dtos = races.Select(r => new RaceStreamDto
@@ -215,7 +220,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
                 Status = r.Status,
                 YoutubeId = r.YoutubeId,
                 Leader = "N/A",
-                Viewers = r.Status == "LIVE" ? "Live" : "Waiting",
+                Viewers = r.Status == "LIVE" || r.Status == "Racing" ? "Live" : "Waiting",
                 TournamentName = r.Tour != null ? r.Tour.TourName : "Unknown Tournament"
             }).ToList();
             
