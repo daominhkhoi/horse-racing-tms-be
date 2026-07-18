@@ -46,6 +46,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         [Range(1.1, 100, ErrorMessage = "Reward Ratio must be between 1.1 and 100.")]
         public double? RewardRatio { get; set; }
 
+        [Range(1, 100)]
+        public int MinParticipants { get; set; } = 2;
+
+        [Range(1, 100)]
+        public int MaxParticipants { get; set; } = 8;
+
         public List<int> RefereeIds { get; set; } = new List<int>();
 
         public List<CreateRaceParticipantDto> Participants { get; set; } = new List<CreateRaceParticipantDto>();

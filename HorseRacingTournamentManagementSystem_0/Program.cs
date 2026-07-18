@@ -45,6 +45,7 @@ builder.Services.AddScoped<IJockeyService, JockeyService>();
 builder.Services.AddScoped<IInvitationService, InvitationService>();
 // Register RaceService
 builder.Services.AddScoped<IRaceService, RaceService>();
+builder.Services.AddScoped<IRaceRegistrationService, RaceRegistrationService>();
 // Register PredictionService
 builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Predictions.Interfaces.IPredictionService, HorseRacingTournamentManagementSystem_0.Modules.Predictions.Services.PredictionService>();
 // Register VNPayService

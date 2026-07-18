@@ -11,5 +11,6 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Interfaces
         Task<IEnumerable<InvitationResponse>> GetMyInvitationsAsync(int jockeyId, string? status = null);
         Task<IEnumerable<InvitationResponse>> GetSentInvitationsAsync(int ownerId, string? status = null);
         Task<bool> RespondToInvitationAsync(int jockeyId, int inviteId, bool isAccepted);
+        Task<bool> ReviewAcceptedInvitationAsync(int inviteId, bool approved);
     }
 }
