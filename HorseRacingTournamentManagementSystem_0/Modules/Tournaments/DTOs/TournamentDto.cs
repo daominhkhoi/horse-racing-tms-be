@@ -34,6 +34,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         public int MinParticipants { get; set; }
         public int MaxParticipants { get; set; }
         public string? CancelReason { get; set; }
+        public bool HasResults { get; set; }
+        public int IncidentsCount { get; set; }
         
         public List<RaceParticipantDto> Participants { get; set; } = new List<RaceParticipantDto>();
         public List<RefereeAssignmentDto> Referees { get; set; } = new List<RefereeAssignmentDto>();

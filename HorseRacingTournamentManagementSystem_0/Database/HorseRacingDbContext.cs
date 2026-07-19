@@ -28,6 +28,8 @@ public partial class HorseRacingDbContext : DbContext
 
     public virtual DbSet<OwnerProfile> OwnerProfiles { get; set; }
 
+    public virtual DbSet<PointTransaction> PointTransactions { get; set; }
+
     public virtual DbSet<Prediction> Predictions { get; set; }
 
     public virtual DbSet<Race> Races { get; set; }
@@ -295,6 +297,22 @@ public partial class HorseRacingDbContext : DbContext
                 .HasForeignKey(d => d.SpectatorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Predictio__Spect__6EF57B66");
+        });
+
+        modelBuilder.Entity<PointTransaction>(entity =>
+        {
+            entity.HasKey(e => e.TransactionId);
+            entity.ToTable("PointTransactions");
+            entity.Property(e => e.TransactionType).HasMaxLength(30);
+            entity.Property(e => e.Description).HasMaxLength(250);
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(e => e.Spectator).WithMany(e => e.PointTransactions)
+                .HasForeignKey(e => e.SpectatorId).OnDelete(DeleteBehavior.ClientSetNull);
+            entity.HasOne(e => e.Prediction).WithMany(e => e.PointTransactions)
+                .HasForeignKey(e => e.PredictionId).OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasIndex(e => new { e.SpectatorId, e.CreatedAt });
         });
 
         modelBuilder.Entity<Race>(entity =>

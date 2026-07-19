@@ -3,6 +3,8 @@ using HorseRacingTournamentManagementSystem_0.Modules.Races.DTOs;
 using HorseRacingTournamentManagementSystem_0.Modules.Races.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using HorseRacingTournamentManagementSystem_0.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers;
 
@@ -12,7 +14,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers;
 public class RaceRegistrationController : ControllerBase
 {
     private readonly IRaceRegistrationService _service;
-    public RaceRegistrationController(IRaceRegistrationService service) => _service = service;
+    private readonly HorseRacingDbContext _context;
+    public RaceRegistrationController(IRaceRegistrationService service, HorseRacingDbContext context)
+    {
+        _service = service;
+        _context = context;
+    }
 
     private int CurrentUserId()
     {
@@ -56,8 +63,18 @@ public class RaceRegistrationController : ControllerBase
     public Task<IActionResult> Close(int raceId) => Execute(async () => { await _service.SetRegistrationStatusAsync(raceId, "Registration Closed"); return Ok(new { message = "Registration closed." }); });
 
     [HttpPost("{raceId}/start")]
-    [Authorize(Roles = "Admin")]
-    public Task<IActionResult> Start(int raceId) => Execute(async () => { await _service.StartRaceAsync(raceId); return Ok(new { message = "Race started." }); });
+    [Authorize(Roles = "Referee")]
+    public Task<IActionResult> Start(int raceId) => Execute(async () =>
+    {
+        var refereeId = CurrentUserId();
+        var isAssigned = await _context.RefereeAssignments
+            .AnyAsync(a => a.RaceId == raceId && a.RefereeId == refereeId);
+        if (!isAssigned)
+            return new ForbidResult();
+
+        await _service.StartRaceAsync(raceId);
+        return Ok(new { message = "Race started." });
+    });
 
     private static async Task<IActionResult> Execute(Func<Task<IActionResult>> action)
     {

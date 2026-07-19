@@ -25,5 +25,7 @@ public partial class Prediction
 
     public virtual ICollection<RewardTransaction> RewardTransactions { get; set; } = new List<RewardTransaction>();
 
+    public virtual ICollection<PointTransaction> PointTransactions { get; set; } = new List<PointTransaction>();
+
     public virtual SpectatorProfile Spectator { get; set; } = null!;
 }

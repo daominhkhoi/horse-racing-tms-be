@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using HorseRacingTournamentManagementSystem_0.Modules.Races.DTOs;
 using HorseRacingTournamentManagementSystem_0.Modules.Races.Interfaces;
+using HorseRacingTournamentManagementSystem_0.Database;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
 {
@@ -11,18 +14,41 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
     public class RacesController : ControllerBase
     {
         private readonly IRaceService _raceService;
+        private readonly HorseRacingDbContext _context;
 
-        public RacesController(IRaceService raceService)
+        public RacesController(IRaceService raceService, HorseRacingDbContext context)
         {
             _raceService = raceService;
+            _context = context;
         }
 
         [HttpPut("{id}/status")]
-        [Authorize(Roles = "Admin,Referee")]
+        [Authorize(Roles = "Referee")]
         public async Task<IActionResult> UpdateRaceStatus(int id, [FromBody] string status)
         {
             try
             {
+                if (status != "Completed")
+                    return BadRequest(new { message = "Referees can only mark a race as completed through this endpoint." });
+
+                var userIdValue = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(userIdValue, out var refereeId))
+                    return Unauthorized();
+
+                var isAssigned = await _context.RefereeAssignments
+                    .AnyAsync(a => a.RaceId == id && a.RefereeId == refereeId);
+                if (!isAssigned)
+                    return Forbid();
+
+                var currentStatus = await _context.Races
+                    .Where(r => r.RaceId == id)
+                    .Select(r => r.Status)
+                    .FirstOrDefaultAsync();
+                if (currentStatus == null)
+                    return NotFound(new { message = "Race not found" });
+                if (currentStatus != "Racing" && currentStatus != "Started" && currentStatus != "Live" && currentStatus != "LIVE" && currentStatus != "Ongoing")
+                    return Conflict(new { message = "Only a race in progress can be marked as completed." });
+
                 var success = await _raceService.UpdateRaceStatusAsync(id, status);
                 if (!success)
                     return NotFound(new { message = "Race not found" });
@@ -36,16 +62,29 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
         }
 
         [HttpPost("{id}/results")]
-        [Authorize(Roles = "Admin,Referee")]
+        [Authorize(Roles = "Referee")]
         public async Task<IActionResult> SubmitResults(int id, [FromBody] SubmitRaceResultDto dto)
         {
             try
             {
+                var userIdValue = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(userIdValue, out var userId)) return Unauthorized();
+                var isAssigned = await _context.RefereeAssignments.AnyAsync(a => a.RaceId == id && a.RefereeId == userId);
+                if (!isAssigned) return Forbid();
+
                 var success = await _raceService.SubmitRaceResultsAsync(id, dto);
                 if (!success)
                     return NotFound(new { message = "Race not found" });
 
                 return Ok(new { message = "Race results submitted successfully!" });
+            }
+            catch (System.ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (System.InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
             }
             catch (System.Exception ex)
             {
@@ -132,7 +171,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
             }
         }
         [HttpGet("referee-list")]
-        [Authorize(Roles = "Admin,Referee")]
+        [Authorize(Roles = "Referee")]
         public async Task<IActionResult> GetRacesForReferee()
         {
             try
@@ -143,9 +182,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
                     return Unauthorized(new { message = "Invalid user ID" });
                 }
                 
-                bool isAdmin = User.IsInRole("Admin");
-
-                var races = await _raceService.GetRacesForRefereeAsync(userId, isAdmin);
+                var races = await _raceService.GetRacesForRefereeAsync(userId, false);
                 return Ok(races);
             }
             catch (System.Exception ex)
@@ -171,7 +208,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
         }
 
         [HttpPost("{id}/incident")]
-        [Authorize(Roles = "Admin,Referee")]
+        [Authorize(Roles = "Referee")]
         public async Task<IActionResult> ReportIncident(int id, [FromBody] HorseRacingTournamentManagementSystem_0.Modules.Races.DTOs.CreateViolationDto dto)
         {
             try
@@ -187,6 +224,13 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
                     return Unauthorized(new { message = "Invalid referee ID" });
                 }
 
+                var isAssigned = await _context.RefereeAssignments
+                    .AnyAsync(a => a.RaceId == id && a.RefereeId == refereeId);
+                if (!isAssigned)
+                {
+                    return Forbid();
+                }
+
                 var success = await _raceService.ReportIncidentAsync(id, refereeId, dto);
                 if (!success)
                 {
@@ -199,6 +243,18 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
             {
                 return StatusCode(500, new { message = "Error reporting incident", error = ex.Message });
             }
+        }
+
+        [HttpGet("{id}/incidents")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetIncidents(int id)
+        {
+            var raceExists = await _context.Races.AnyAsync(r => r.RaceId == id);
+            if (!raceExists)
+                return NotFound(new { message = "Race not found" });
+
+            var incidents = await _raceService.GetRaceIncidentsAsync(id);
+            return Ok(incidents);
         }
     }
 }

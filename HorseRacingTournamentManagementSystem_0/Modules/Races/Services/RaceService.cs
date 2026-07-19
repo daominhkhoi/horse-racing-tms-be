@@ -6,6 +6,7 @@ using HorseRacingTournamentManagementSystem_0.Entities;
 using HorseRacingTournamentManagementSystem_0.Modules.Races.DTOs;
 using HorseRacingTournamentManagementSystem_0.Modules.Races.Interfaces;
 using HorseRacingTournamentManagementSystem_0.Database;
+using System.Data;
 
 namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
 {
@@ -33,29 +34,52 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
 
         public async Task<bool> SubmitRaceResultsAsync(int raceId, SubmitRaceResultDto dto)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
             var race = await _context.Races
                 .Include(r => r.RaceParticipants)
                 .FirstOrDefaultAsync(r => r.RaceId == raceId);
 
             if (race == null) return false;
 
-            // Optional: you can add a check here to ensure the race status is 'Completed'
-            if (race.Status == "Awarded") throw new Exception("Cannot edit results of an awarded race.");
+            if (race.Status != "Completed")
+                throw new InvalidOperationException("Results can only be submitted for a completed race.");
 
-            // Clear existing results for this race
-            var existingResults = await _context.Results.Where(r => r.RaceId == raceId).ToListAsync();
-            if (existingResults.Any())
-            {
-                _context.Results.RemoveRange(existingResults);
-            }
+            var resultsAlreadySubmitted = await _context.Results.AnyAsync(r => r.RaceId == raceId);
+            if (resultsAlreadySubmitted)
+                throw new InvalidOperationException("Race results have already been submitted and are permanently locked.");
+
+            var approvedParticipantIds = race.RaceParticipants
+                .Where(p => p.ParticipationStatus == "Approved")
+                .Select(p => p.ParticipantId)
+                .ToHashSet();
+            var submittedResults = dto.ParticipantResults ?? new List<ParticipantResultDto>();
+            var submittedParticipantIds = submittedResults.Select(r => r.ParticipantId).ToList();
+
+            if (approvedParticipantIds.Count == 0)
+                throw new ArgumentException("This race has no approved participants.");
+            if (submittedParticipantIds.Count != approvedParticipantIds.Count
+                || submittedParticipantIds.Distinct().Count() != submittedParticipantIds.Count
+                || !submittedParticipantIds.ToHashSet().SetEquals(approvedParticipantIds))
+                throw new ArgumentException("Results must be provided exactly once for every approved participant.");
+
+            var ranks = submittedResults.Select(r => r.RankPosition).ToList();
+            var expectedRanks = Enumerable.Range(1, approvedParticipantIds.Count).ToHashSet();
+            if (ranks.Any(rank => !rank.HasValue)
+                || ranks.Select(rank => rank!.Value).Distinct().Count() != approvedParticipantIds.Count
+                || !ranks.Select(rank => rank!.Value).ToHashSet().SetEquals(expectedRanks))
+                throw new ArgumentException($"Ranks must be unique and include every position from 1 to {approvedParticipantIds.Count}.");
+
+            if (submittedResults.Any(r => !r.FinishTime.HasValue || r.FinishTime.Value == TimeOnly.MinValue))
+                throw new ArgumentException("A valid finish time is required for every participant.");
+
+            var allowedStatuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Finished", "DNF", "DSQ" };
+            if (submittedResults.Any(r => string.IsNullOrWhiteSpace(r.ResultStatus) || !allowedStatuses.Contains(r.ResultStatus)))
+                throw new ArgumentException("Every participant must have a valid result status.");
 
             // Map and add new results
-            foreach (var partResult in dto.ParticipantResults)
+            foreach (var partResult in submittedResults)
             {
                 // Verify the participant belongs to this race
-                if (!race.RaceParticipants.Any(p => p.ParticipantId == partResult.ParticipantId))
-                    continue;
-
                 var result = new Result
                 {
                     RaceId = raceId,
@@ -69,6 +93,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
             }
 
             await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
             return true;
         }
 
@@ -112,6 +137,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
                 var race = await _context.Races.FirstOrDefaultAsync(r => r.RaceId == raceId);
                 if (race == null) return "Race not found.";
                 if (race.Status == "Awarded") return "Prizes have already been awarded for this race.";
+                if (race.Status != "Completed") return "Only completed races can be awarded.";
 
                 var firstPlaceResults = await _context.Results
                     .Where(r => r.RaceId == raceId && r.RankPosition == 1)
@@ -137,6 +163,14 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
                         {
                             prediction.Spectator.TotalPoints = (prediction.Spectator.TotalPoints ?? 0) + prediction.RewardPoints;
                         }
+                        _context.PointTransactions.Add(new PointTransaction
+                        {
+                            SpectatorId = prediction.SpectatorId,
+                            PredictionId = prediction.PredictionId,
+                            Amount = prediction.RewardPoints ?? 0,
+                            TransactionType = "BetWon",
+                            Description = $"Winning reward for race #{raceId}."
+                        });
                     }
                     else
                     {
@@ -247,10 +281,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
         public async Task<List<RefereeRaceDto>> GetRacesForRefereeAsync(int userId, bool isAdmin)
         {
             var query = _context.Races
-                .Include(r => r.Tour)
-                .Include(r => r.RaceParticipants)
-                .Include(r => r.Violations)
-                .Include(r => r.RefereeAssignments)
+                .AsNoTracking()
                 .AsQueryable();
 
             if (!isAdmin)
@@ -258,22 +289,24 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
                 query = query.Where(r => r.RefereeAssignments.Any(a => a.RefereeId == userId));
             }
 
-            var races = await query.OrderByDescending(r => r.RaceDateTime).ToListAsync();
-
-            return races.Select(r => new RefereeRaceDto
-            {
-                RaceId = r.RaceId,
-                RaceName = r.RaceName ?? "Unknown Race",
-                TournamentId = r.TourId,
-                TournamentName = r.Tour?.TourName ?? "Unknown Tournament",
-                TournamentBanner = r.Tour?.BannerUrl,
-                Track = r.Tour?.Location ?? "Unknown Track",
-                Status = r.Status ?? "Pending",
-                HorsesCount = r.RaceParticipants.Count,
-                Laps = r.Round?.ToString() ?? "0",
-                Leader = "—",
-                IncidentsCount = r.Violations.Count
-            }).ToList();
+            return await query
+                .OrderByDescending(r => r.RaceDateTime)
+                .Select(r => new RefereeRaceDto
+                {
+                    RaceId = r.RaceId,
+                    RaceName = r.RaceName ?? "Unknown Race",
+                    TournamentId = r.TourId,
+                    TournamentName = r.Tour.TourName ?? "Unknown Tournament",
+                    TournamentBanner = r.Tour.BannerUrl,
+                    Track = r.Tour.Location ?? "Unknown Track",
+                    Status = r.Status ?? "Pending",
+                    HorsesCount = r.RaceParticipants.Count,
+                    Laps = r.Round.HasValue ? r.Round.Value.ToString() : "0",
+                    Leader = "—",
+                    IncidentsCount = r.Violations.Count,
+                    HasResults = r.Results.Any()
+                })
+                .ToListAsync();
         }
 
         public async Task<List<RefereeParticipantDto>> GetRaceParticipantsAsync(int raceId)
@@ -283,6 +316,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
                 .Include(p => p.Jockey)
                     .ThenInclude(j => j.User)
                 .Where(p => p.RaceId == raceId)
+                .Where(p => p.ParticipationStatus == "Approved")
                 .ToListAsync();
 
             return participants.Select(p => new RefereeParticipantDto
@@ -311,6 +345,26 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
             _context.Violations.Add(violation);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<IncidentViewDto>> GetRaceIncidentsAsync(int raceId)
+        {
+            return await _context.Violations
+                .AsNoTracking()
+                .Where(v => v.RaceId == raceId)
+                .OrderByDescending(v => v.ViolationId)
+                .Select(v => new IncidentViewDto
+                {
+                    ViolationId = v.ViolationId,
+                    ParticipantId = v.ParticipantId,
+                    HorseName = v.Participant.Horse.HorseName ?? "Unknown Horse",
+                    JockeyName = v.Participant.Jockey.User.FullName ?? "Unknown Jockey",
+                    RefereeName = v.Referee.User.FullName ?? "Unknown Referee",
+                    ViolationType = v.ViolationType ?? "Unspecified",
+                    Penalty = v.Penalty ?? "None",
+                    Description = v.Description
+                })
+                .ToListAsync();
         }
     }
 }

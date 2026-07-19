@@ -117,6 +117,13 @@ public class VNPayService : IVNPayService
         if (vnp_ResponseCode == "00" && vnp_TransactionStatus == "00")
         {
             spectator.TotalPoints = (spectator.TotalPoints ?? 0) + pointsAdded;
+            _context.PointTransactions.Add(new PointTransaction
+            {
+                SpectatorId = spectator.UserId,
+                Amount = pointsAdded,
+                TransactionType = "TopUp",
+                Description = $"VNPay top-up transaction {vnp_TxnRef}."
+            });
         }
 
         _context.TopupTransactions.Add(txn);
