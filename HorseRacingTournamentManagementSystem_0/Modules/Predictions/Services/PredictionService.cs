@@ -46,13 +46,15 @@ public class PredictionService : IPredictionService
                                        && p.ParticipantId == request.ParticipantId 
                                        && p.Status == "Active");
 
+            Prediction prediction;
             if (existingPrediction != null)
             {
                 existingPrediction.BetPoints += request.BetPoints;
+                prediction = existingPrediction;
             }
             else
             {
-                var prediction = new Prediction
+                prediction = new Prediction
                 {
                     RaceId = request.RaceId,
                     SpectatorId = spectatorId,
@@ -62,6 +64,15 @@ public class PredictionService : IPredictionService
                 };
                 _context.Predictions.Add(prediction);
             }
+
+            _context.PointTransactions.Add(new PointTransaction
+            {
+                SpectatorId = spectatorId,
+                Prediction = prediction,
+                Amount = -request.BetPoints,
+                TransactionType = "BetPlaced",
+                Description = $"Bet placed on race #{request.RaceId}."
+            });
 
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
@@ -102,6 +113,15 @@ public class PredictionService : IPredictionService
 
             prediction.Status = "Cancelled";
             prediction.RewardPoints = 0;
+
+            _context.PointTransactions.Add(new PointTransaction
+            {
+                SpectatorId = spectatorId,
+                PredictionId = prediction.PredictionId,
+                Amount = refund,
+                TransactionType = "BetRefund",
+                Description = "50% refund for a cancelled bet."
+            });
 
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();

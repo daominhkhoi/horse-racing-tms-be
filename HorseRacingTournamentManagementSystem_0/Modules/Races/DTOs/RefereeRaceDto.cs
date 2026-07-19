@@ -15,5 +15,6 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.DTOs
         public string Laps { get; set; } = string.Empty;
         public string Leader { get; set; } = string.Empty;
         public int IncidentsCount { get; set; }
+        public bool HasResults { get; set; }
     }
 }

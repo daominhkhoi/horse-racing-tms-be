@@ -15,6 +15,8 @@ public partial class SpectatorProfile
 
     public virtual ICollection<Prediction> Predictions { get; set; } = new List<Prediction>();
 
+    public virtual ICollection<PointTransaction> PointTransactions { get; set; } = new List<PointTransaction>();
+
     public virtual ICollection<RewardTransaction> RewardTransactions { get; set; } = new List<RewardTransaction>();
 
     public virtual ICollection<TopupTransaction> TopupTransactions { get; set; } = new List<TopupTransaction>();

@@ -16,5 +16,6 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Interfaces
         Task<List<RefereeRaceDto>> GetRacesForRefereeAsync(int userId, bool isAdmin);
         Task<List<RefereeParticipantDto>> GetRaceParticipantsAsync(int raceId);
         Task<bool> ReportIncidentAsync(int raceId, int refereeId, CreateViolationDto dto);
+        Task<List<IncidentViewDto>> GetRaceIncidentsAsync(int raceId);
     }
 }

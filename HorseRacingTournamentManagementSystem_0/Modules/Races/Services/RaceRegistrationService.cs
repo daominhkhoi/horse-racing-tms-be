@@ -109,7 +109,14 @@ public class RaceRegistrationService : IRaceRegistrationService
     public async Task StartRaceAsync(int raceId)
     {
         var race = await _context.Races.FindAsync(raceId) ?? throw new Exception("Race not found.");
-        if (race.Status != "Ready To Start") throw new Exception("Race is not ready to start.");
+        if (race.Status != "Registration Closed" && race.Status != "Ready To Start")
+            throw new Exception("Close registration before starting the race.");
+
+        var confirmedParticipants = await _context.RaceParticipants
+            .CountAsync(p => p.RaceId == raceId && p.ParticipationStatus == "Approved");
+        if (confirmedParticipants < race.MinParticipants)
+            throw new Exception($"At least {race.MinParticipants} confirmed horse-jockey participants are required to start this race.");
+
         race.Status = "Racing";
         await _context.SaveChangesAsync();
     }

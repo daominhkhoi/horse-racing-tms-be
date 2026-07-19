@@ -79,6 +79,10 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     .ThenInclude(r => r.RefereeAssignments)
                         .ThenInclude(ra => ra.Referee)
                             .ThenInclude(r => r.User)
+                .Include(t => t.Races)
+                    .ThenInclude(r => r.Results)
+                .Include(t => t.Races)
+                    .ThenInclude(r => r.Violations)
                 .FirstOrDefaultAsync(t => t.TourId == id);
 
             if (tournament == null)
@@ -110,6 +114,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     MinParticipants = r.MinParticipants,
                     MaxParticipants = r.MaxParticipants,
                     CancelReason = r.CancelReason,
+                    HasResults = r.Results.Any(),
+                    IncidentsCount = r.Violations.Count,
                     Participants = r.RaceParticipants.Select(p => new RaceParticipantDto
                     {
                         ParticipantId = p.ParticipantId,
