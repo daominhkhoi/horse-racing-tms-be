@@ -183,5 +183,45 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Services
                 .OrderByDescending(j => j.UserId) // Jockey mới nhất hiển thị trên cùng
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<JockeyProfile>> GetAvailableJockeysForTournamentAsync(int tourId, int currentOwnerId)
+        {
+            // Jockey is busy if:
+            // 1. They have an Accepted or AcceptedPendingAdmin invitation for ANY horse in this tournament
+            // 2. They have a Pending invitation for a horse owned by the CURRENT OWNER in this tournament
+            // 3. They are already a RaceParticipant in any race of this tournament
+
+            var acceptedInvites = await _context.Invitations
+                .Where(i => i.TourId == tourId && (i.Status == "Accepted" || i.Status == "AcceptedPendingAdmin"))
+                .Select(i => i.JockeyId)
+                .ToListAsync();
+
+            var pendingInvitesFromMe = await _context.Invitations
+                .Where(i => i.TourId == tourId && i.OwnerId == currentOwnerId && i.Status == "Pending")
+                .Select(i => i.JockeyId)
+                .ToListAsync();
+
+            var tournamentRaceIds = await _context.Races
+                .Where(r => r.TourId == tourId)
+                .Select(r => r.RaceId)
+                .ToListAsync();
+
+            var participantJockeys = await _context.RaceParticipants
+                .Where(p => tournamentRaceIds.Contains(p.RaceId) && p.ParticipationStatus != "Rejected" && p.ParticipationStatus != "Cancelled")
+                .Select(p => p.JockeyId)
+                .ToListAsync();
+
+            var busyIds = acceptedInvites
+                .Concat(pendingInvitesFromMe)
+                .Concat(participantJockeys)
+                .Distinct()
+                .ToList();
+
+            return await _context.JockeyProfiles
+                .Include(j => j.User)
+                .Where(j => j.User.IsActive == true && !busyIds.Contains(j.UserId))
+                .OrderByDescending(j => j.UserId)
+                .ToListAsync();
+        }
     }
 }

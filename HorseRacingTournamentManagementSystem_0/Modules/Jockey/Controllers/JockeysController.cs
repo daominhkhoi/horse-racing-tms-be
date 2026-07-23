@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Controllers
     ///
     /// Danh sách endpoints:
     ///   GET  /api/jockeys           → Danh sách công khai Jockey (AllowAnonymous)
+    ///   GET  /api/jockeys/available/{tourId} → Danh sách Jockey chưa tham gia giải đấu (Role: HorseOwner)
     ///   PUT  /api/jockeys/{id}      → Jockey gửi yêu cầu cập nhật thông tin (Role: Jockey)
     ///   PUT  /api/jockeys/{id}/review → Admin duyệt / từ chối đơn cập nhật (Role: Admin)
     /// </summary>
@@ -36,16 +38,6 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Controllers
 
         /// <summary>
         /// [FR-JCKY-004] Trả về danh sách toàn bộ Jockey trong hệ thống (dành cho tất cả người dùng).
-        ///
-        /// === LUỒNG HTTP ===
-        ///   Client → GET /api/jockeys
-        ///   Controller → gọi _jockeyService.GetAllJockeysPublicAsync()
-        ///   Service    → truy vấn DB, Include User, sắp xếp mới nhất trước
-        ///   Controller → trả 200 OK kèm danh sách JSON
-        ///
-        /// === PHÂN QUYỀN ===
-        ///   [AllowAnonymous]: bất kỳ ai cũng có thể gọi, kể cả chưa đăng nhập.
-        ///   Phù hợp với trang giới thiệu Jockey công khai (landing page, SEO...).
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
@@ -65,6 +57,33 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Controllers
                 return StatusCode(500, new
                 {
                     message = "Error retrieving jockey list",
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("available/{tourId}")]
+        [Authorize(Roles = "HorseOwner")]
+        public async Task<IActionResult> GetAvailableJockeysForTournament(int tourId)
+        {
+            try
+            {
+                var value = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!int.TryParse(value, out var ownerId))
+                    return Unauthorized(new { message = "Invalid user token." });
+
+                var jockeys = await _jockeyService.GetAvailableJockeysForTournamentAsync(tourId, ownerId);
+                return Ok(new
+                {
+                    message = "Available jockeys retrieved successfully!",
+                    data = jockeys
+                });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Error retrieving available jockeys",
                     error = ex.Message
                 });
             }
