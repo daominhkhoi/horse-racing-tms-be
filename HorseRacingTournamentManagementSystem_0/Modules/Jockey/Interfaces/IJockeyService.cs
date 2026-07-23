@@ -42,7 +42,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Interfaces
         Task<bool> ReviewUpdateRequestAsync(int jockeyId, ReviewJockeyDto dto);
 
         /// <summary>
-        /// [FR-JCKY-004] Trả về danh sách công khai tất cả Jockey trong hệ thống.
+        /// Trả về danh sách công khai tất cả Jockey trong hệ thống.
         ///
         /// LUỒNG: Bất kỳ người dùng nào → gọi API GET /api/jockeys
         ///        → Service truy vấn DB, lấy Jockey_Profiles kèm thông tin User
@@ -50,5 +50,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Interfaces
         /// </summary>
         /// <returns>Danh sách tất cả JockeyProfile cùng thông tin User đi kèm.</returns>
         Task<IEnumerable<JockeyProfile>> GetAllJockeysPublicAsync();
+
+        /// <summary>
+        /// Trả về danh sách Jockey chưa tham gia vào giải đấu (tournament).
+        /// Jockey bị coi là đã tham gia nếu có lời mời ở trạng thái Accepted, AcceptedPendingAdmin, hoặc đã là RaceParticipant.
+        /// Lời mời Pending từ owner khác KHÔNG ngăn cản owner này mời.
+        /// </summary>
+        Task<IEnumerable<JockeyProfile>> GetAvailableJockeysForTournamentAsync(int tourId, int currentOwnerId);
     }
 }
