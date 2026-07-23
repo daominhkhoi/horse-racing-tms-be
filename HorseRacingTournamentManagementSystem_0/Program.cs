@@ -52,6 +52,8 @@ builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Predi
 builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Topups.Services.IVNPayService, HorseRacingTournamentManagementSystem_0.Modules.Topups.Services.VNPayService>();
 // Register DashboardService
 builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Dashboard.Interfaces.IDashboardService, HorseRacingTournamentManagementSystem_0.Modules.Dashboard.Services.DashboardService>();
+// Register LeaderboardService
+builder.Services.AddScoped<HorseRacingTournamentManagementSystem_0.Modules.Leaderboards.Interfaces.ILeaderboardService, HorseRacingTournamentManagementSystem_0.Modules.Leaderboards.Services.LeaderboardService>();
 
 // --- Code cắm Database đã có sẵn của bạn ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

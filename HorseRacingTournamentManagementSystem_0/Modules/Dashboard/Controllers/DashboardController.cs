@@ -21,4 +21,11 @@ public class DashboardController : ControllerBase
         var stats = await _dashboardService.GetStatsAsync();
         return Ok(stats);
     }
+
+    [HttpGet("chart")]
+    public async Task<ActionResult<List<ChartDataDto>>> GetChartData([FromQuery] string type = "races", [FromQuery] string range = "W")
+    {
+        var chartData = await _dashboardService.GetChartDataAsync(type, range);
+        return Ok(chartData);
+    }
 }

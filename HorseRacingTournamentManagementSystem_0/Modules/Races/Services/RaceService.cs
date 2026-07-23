@@ -203,23 +203,22 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
             if (tournament == null) return;
             if (!tournament.Races.Any()) return;
 
-            bool allFinished = tournament.Races.All(r => r.Status == "Completed" || r.Status == "Awarded");
+            bool allFinished = tournament.Races.All(r => r.Status == "Completed" || r.Status == "Awarded" || r.Status == "Cancelled");
             bool anyActive = tournament.Races.Any(r => r.Status == "Started" || r.Status == "Live" || r.Status == "Ongoing" || r.Status == "Completed" || r.Status == "Awarded");
 
+            string newStatus = "Upcoming";
             if (allFinished)
             {
-                tournament.Status = "Completed";
+                newStatus = "Completed";
             }
             else if (anyActive)
             {
-                tournament.Status = "Live";
-            }
-            else
-            {
-                tournament.Status = "Upcoming";
+                newStatus = "Live";
             }
 
-            await _context.SaveChangesAsync();
+            await _context.Tournaments
+                .Where(t => t.TourId == tourId)
+                .ExecuteUpdateAsync(s => s.SetProperty(t => t.Status, newStatus));
         }
 
         public async Task<bool> UpdateYoutubeIdAsync(int raceId, string youtubeId)
