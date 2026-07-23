@@ -18,6 +18,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Controller
             _tournamentService = tournamentService;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAllTournaments([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
         {
