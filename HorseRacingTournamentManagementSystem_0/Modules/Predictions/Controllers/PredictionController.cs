@@ -58,4 +58,12 @@ public class PredictionController : ControllerBase
         var predictions = await _predictionService.GetMyPredictionsAsync(userId);
         return Ok(new { data = predictions });
     }
+
+    [HttpGet("ai-insights")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAiInsights()
+    {
+        var insights = await _predictionService.GetAiInsightsAsync();
+        return Ok(new { data = insights });
+    }
 }

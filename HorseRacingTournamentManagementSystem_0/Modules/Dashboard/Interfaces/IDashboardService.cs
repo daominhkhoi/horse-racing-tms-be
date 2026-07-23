@@ -5,4 +5,5 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Dashboard.Interfaces;
 public interface IDashboardService
 {
     Task<DashboardStatsDto> GetStatsAsync();
+    Task<List<ChartDataDto>> GetChartDataAsync(string type, string range);
 }
