@@ -76,12 +76,6 @@ public class LeaderboardService : ILeaderboardService
                 var result = rp.Results.FirstOrDefault();
                 form.Add(result != null && result.RankPosition == 1 ? "W" : "L");
             }
-
-            // Fill missing with random if less than 5 for demo purposes
-            while (form.Count < 5)
-            {
-                form.Add(random.Next(3) == 0 ? "W" : "L");
-            }
             form.Reverse(); // oldest first visually
 
             // Get most recent jockey
@@ -111,7 +105,7 @@ public class LeaderboardService : ILeaderboardService
             }
         }
 
-        return leaderboard.OrderByDescending(l => l.Points).ToList();
+        return leaderboard.OrderByDescending(l => l.Wins).ThenByDescending(l => l.WinRate).ToList();
     }
 
     private string GetRandomGradient(Random random)

@@ -22,6 +22,20 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllRaces()
+        {
+            try
+            {
+                var races = await _raceService.GetRacesForRefereeAsync(0, true);
+                return Ok(races);
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { message = "Error getting all races", error = ex.Message });
+            }
+        }
+
         [HttpPut("{id}/status")]
         [Authorize(Roles = "Referee")]
         public async Task<IActionResult> UpdateRaceStatus(int id, [FromBody] string status)

@@ -29,6 +29,21 @@ public partial class Horse
     [NotMapped]
     public string? OwnerName => Owner?.User?.FullName;
 
+    [NotMapped]
+    public int Wins 
+    {
+        get 
+        {
+            if (Leaderboards != null && Leaderboards.Any())
+                return Leaderboards.Sum(l => l.TotalWins ?? 0);
+                
+            if (RaceParticipants != null)
+                return RaceParticipants.SelectMany(rp => rp.Results ?? new List<Result>()).Count(r => r.RankPosition == 1);
+                
+            return 0;
+        }
+    }
+
     public virtual ICollection<HorseVerification> HorseVerifications { get; set; } = new List<HorseVerification>();
 
     public virtual ICollection<Invitation> Invitations { get; set; } = new List<Invitation>();

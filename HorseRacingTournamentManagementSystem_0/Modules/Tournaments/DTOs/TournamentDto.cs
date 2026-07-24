@@ -15,6 +15,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         public bool IsHidden { get; set; }
         public string? BannerUrl { get; set; }
         public int ParticipantCount { get; set; }
+        public int LiveRacesCount { get; set; }
     }
 
     public class TournamentDetailDto : TournamentDto
@@ -36,6 +37,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.DTOs
         public string? CancelReason { get; set; }
         public bool HasResults { get; set; }
         public int IncidentsCount { get; set; }
+        public string? YoutubeId { get; set; }
         
         public List<RaceParticipantDto> Participants { get; set; } = new List<RaceParticipantDto>();
         public List<RefereeAssignmentDto> Referees { get; set; } = new List<RefereeAssignmentDto>();

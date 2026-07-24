@@ -52,7 +52,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     Status = t.Status,
                     IsHidden = t.IsHidden,
                     BannerUrl = t.BannerUrl,
-                    ParticipantCount = t.Races.SelectMany(r => r.RaceParticipants).Count()
+                    ParticipantCount = t.Races.SelectMany(r => r.RaceParticipants).Count(),
+                    LiveRacesCount = t.Races.Count(r => !string.IsNullOrEmpty(r.YoutubeId) && (r.Status.ToUpper() == "LIVE" || r.Status.ToUpper() == "STARTED" || r.Status.ToUpper() == "ONGOING" || r.Status.ToUpper() == "RACING"))
                 })
                 .ToListAsync();
 
@@ -102,6 +103,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                 IsHidden = tournament.IsHidden,
                 BannerUrl = tournament.BannerUrl,
                 ParticipantCount = tournament.Races.Sum(r => r.RaceParticipants.Count),
+                LiveRacesCount = tournament.Races.Count(r => !string.IsNullOrEmpty(r.YoutubeId) && (r.Status.ToUpper() == "LIVE" || r.Status.ToUpper() == "STARTED" || r.Status.ToUpper() == "ONGOING" || r.Status.ToUpper() == "RACING")),
                 Races = tournament.Races.Select(r => new RaceDto
                 {
                     RaceId = r.RaceId,
@@ -116,6 +118,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Tournaments.Services
                     CancelReason = r.CancelReason,
                     HasResults = r.Results.Any(),
                     IncidentsCount = r.Violations.Count,
+                    YoutubeId = r.YoutubeId,
                     Participants = r.RaceParticipants.Select(p => new RaceParticipantDto
                     {
                         ParticipantId = p.ParticipantId,
