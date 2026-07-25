@@ -68,6 +68,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Services
             return await _context.Horses
                 .Include(h => h.HorseVerifications)
                 .Include(h => h.Owner).ThenInclude(o => o.User)
+                .Include(h => h.Leaderboards)
+                .Include(h => h.RaceParticipants).ThenInclude(rp => rp.Results)
                 .Where(h => h.OwnerId == ownerId)
                 .OrderByDescending(h => h.HorseId)
                 .ToListAsync();
@@ -78,6 +80,8 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Horses.Services
             return await _context.Horses
                 .Include(h => h.HorseVerifications)
                 .Include(h => h.Owner).ThenInclude(o => o.User)
+                .Include(h => h.Leaderboards)
+                .Include(h => h.RaceParticipants).ThenInclude(rp => rp.Results)
                 .OrderByDescending(h => h.HorseId)
                 .ToListAsync();
         }

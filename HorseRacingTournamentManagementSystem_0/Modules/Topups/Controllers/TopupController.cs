@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using HorseRacingTournamentManagementSystem_0.Modules.Topups.DTOs;
 using HorseRacingTournamentManagementSystem_0.Modules.Topups.Services;
+using HorseRacingTournamentManagementSystem_0.Database;
+using HorseRacingTournamentManagementSystem_0.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HorseRacingTournamentManagementSystem_0.Modules.Topups.Controllers;
 
@@ -12,10 +15,12 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Topups.Controllers;
 public class TopupController : ControllerBase
 {
     private readonly IVNPayService _vnPayService;
+    private readonly HorseRacingDbContext _context;
 
-    public TopupController(IVNPayService vnPayService)
+    public TopupController(IVNPayService vnPayService, HorseRacingDbContext context)
     {
         _vnPayService = vnPayService;
+        _context = context;
     }
 
     [Authorize(Roles = "Spectator")]
@@ -44,6 +49,60 @@ public class TopupController : ControllerBase
         else
         {
             return Ok(new { RspCode = "99", Message = result });
+        }
+    }
+
+    [Authorize(Roles = "Spectator")]
+    [HttpPost("withdraw")]
+    public async Task<IActionResult> Withdraw([FromBody] WithdrawRequestDto request)
+    {
+        if (request.Amount < 10)
+        {
+            return BadRequest(new { message = "Minimum withdrawal amount is 10 PTS (10,000 VND)." });
+        }
+
+        var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(userIdClaim, out int spectatorId))
+        {
+            return Unauthorized(new { message = "Invalid token or user ID." });
+        }
+
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var spectator = await _context.SpectatorProfiles.FindAsync(spectatorId);
+            if (spectator == null)
+            {
+                return NotFound(new { message = "Spectator not found." });
+            }
+
+            var currentPoints = spectator.TotalPoints ?? 0;
+            if (request.Amount > currentPoints)
+            {
+                return BadRequest(new { message = "Insufficient points balance." });
+            }
+
+            spectator.TotalPoints = currentPoints - request.Amount;
+
+            var pointTransaction = new PointTransaction
+            {
+                SpectatorId = spectatorId,
+                Amount = -request.Amount, // Using negative to denote withdrawal/deduction
+                TransactionType = "Withdrawal",
+                Description = $"Withdrawal to {request.BankName} - {request.AccountNumber} ({request.AccountName})"
+            };
+
+            _context.PointTransactions.Add(pointTransaction);
+            await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+
+            return Ok(new { message = "Withdrawal request processed successfully.", newBalance = spectator.TotalPoints });
+        }
+        catch (System.Exception ex)
+        {
+            await transaction.RollbackAsync();
+            return StatusCode(500, new { message = "An error occurred while processing withdrawal.", error = ex.Message });
         }
     }
 }
