@@ -42,14 +42,33 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
                 throw new Exception("Tournament not found.");
             }
 
-            if (!await _raceRegistrationService.HasApprovedRegistrationAsync(ownerId, request.HorseId, request.TourId))
+            var approvedRegistration = await _context.RaceRegistrations
+                .Include(r => r.Race)
+                .FirstOrDefaultAsync(r =>
+                    r.OwnerId == ownerId
+                    && r.HorseId == request.HorseId
+                    && r.Status == "Approved"
+                    && r.Race.TourId == request.TourId);
+            if (approvedRegistration == null)
                 throw new Exception("Horse registration must be approved by an admin before inviting a jockey.");
 
-            if (await _context.Invitations.AnyAsync(i => i.HorseId == request.HorseId && i.TourId == request.TourId && (i.Status == "Accepted" || i.Status == "AcceptedPendingAdmin")))
+            var raceId = approvedRegistration.RaceId;
+
+            if (await _context.Invitations.AnyAsync(i =>
+                    i.HorseId == request.HorseId
+                    && i.TourId == request.TourId
+                    && (i.Status == "Accepted" || i.Status == "AcceptedPendingAdmin")))
                 throw new Exception("This horse already has a jockey confirmation awaiting or approved by admin.");
 
-            if (await _context.Invitations.AnyAsync(i => i.JockeyId == request.JockeyId && i.TourId == request.TourId && (i.Status == "Accepted" || i.Status == "AcceptedPendingAdmin")))
-                throw new Exception("This jockey already confirmed another horse in this tournament.");
+            if (await _context.Invitations.AnyAsync(i =>
+                    i.JockeyId == request.JockeyId
+                    && i.TourId == request.TourId
+                    && (i.Status == "Accepted" || i.Status == "AcceptedPendingAdmin")
+                    && _context.RaceRegistrations.Any(r =>
+                        r.RaceId == raceId
+                        && r.HorseId == i.HorseId
+                        && r.Status == "Approved")))
+                throw new Exception("This jockey already confirmed another horse in this race.");
 
             var existingInvite = await _context.Invitations
                 .FirstOrDefaultAsync(i => i.JockeyId == request.JockeyId 
@@ -169,27 +188,53 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Invitations.Services
 
             if (isAccepted)
             {
+                var raceId = await _context.RaceRegistrations
+                    .Where(r =>
+                        r.HorseId == invite.HorseId
+                        && r.Status == "Approved"
+                        && r.Race.TourId == invite.TourId)
+                    .Select(r => r.RaceId)
+                    .FirstOrDefaultAsync();
+                if (raceId == 0)
+                    throw new Exception("No approved race registration was found for this invitation.");
+
                 var jockeyAlreadyCommitted = await _context.Invitations.AnyAsync(i =>
                     i.TourId == invite.TourId &&
                     i.JockeyId == jockeyId &&
                     i.InviteId != inviteId &&
-                    (i.Status == "AcceptedPendingAdmin" || i.Status == "Accepted"));
+                    (i.Status == "AcceptedPendingAdmin" || i.Status == "Accepted") &&
+                    _context.RaceRegistrations.Any(r =>
+                        r.RaceId == raceId
+                        && r.HorseId == i.HorseId
+                        && r.Status == "Approved"));
                 if (jockeyAlreadyCommitted)
-                    throw new Exception("You already confirmed another horse in this tournament.");
+                    throw new Exception("You already confirmed another horse in this race.");
             }
 
             invite.Status = isAccepted ? "AcceptedPendingAdmin" : "Rejected";
 
             if (isAccepted)
             {
+                var raceId = await _context.RaceRegistrations
+                    .Where(r =>
+                        r.HorseId == invite.HorseId
+                        && r.Status == "Approved"
+                        && r.Race.TourId == invite.TourId)
+                    .Select(r => r.RaceId)
+                    .FirstAsync();
+
                 // One horse can only have one jockey, and one jockey can only
-                // ride one horse in the same tournament. Cancel both kinds of
-                // conflicting invitations as soon as a jockey confirms.
+                // ride one horse in the same race. Pending invitations in other
+                // races remain valid.
                 var otherPendingInvites = await _context.Invitations
                     .Where(i => i.TourId == invite.TourId
                              && i.Status == "Pending" 
                              && i.InviteId != inviteId
-                             && (i.HorseId == invite.HorseId || i.JockeyId == jockeyId))
+                             && (i.HorseId == invite.HorseId || i.JockeyId == jockeyId)
+                             && _context.RaceRegistrations.Any(r =>
+                                 r.RaceId == raceId
+                                 && r.HorseId == i.HorseId
+                                 && r.Status == "Approved"))
                     .ToListAsync();
 
                 foreach (var otherInvite in otherPendingInvites)

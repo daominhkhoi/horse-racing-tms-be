@@ -13,7 +13,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Controllers
     ///
     /// Danh sách endpoints:
     ///   GET  /api/jockeys           → Danh sách công khai Jockey (AllowAnonymous)
-    ///   GET  /api/jockeys/available/{tourId} → Danh sách Jockey chưa tham gia giải đấu (Role: HorseOwner)
+    ///   GET  /api/jockeys/available/race/{raceId} → Danh sách Jockey khả dụng cho race (Role: HorseOwner)
     ///   PUT  /api/jockeys/{id}      → Jockey gửi yêu cầu cập nhật thông tin (Role: Jockey)
     ///   PUT  /api/jockeys/{id}/review → Admin duyệt / từ chối đơn cập nhật (Role: Admin)
     /// </summary>
@@ -62,17 +62,13 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Controllers
             }
         }
 
-        [HttpGet("available/{tourId}")]
+        [HttpGet("available/race/{raceId}")]
         [Authorize(Roles = "HorseOwner")]
-        public async Task<IActionResult> GetAvailableJockeysForTournament(int tourId)
+        public async Task<IActionResult> GetAvailableJockeysForRace(int raceId)
         {
             try
             {
-                var value = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (!int.TryParse(value, out var ownerId))
-                    return Unauthorized(new { message = "Invalid user token." });
-
-                var jockeys = await _jockeyService.GetAvailableJockeysForTournamentAsync(tourId, ownerId);
+                var jockeys = await _jockeyService.GetAvailableJockeysForRaceAsync(raceId);
                 return Ok(new
                 {
                     message = "Available jockeys retrieved successfully!",

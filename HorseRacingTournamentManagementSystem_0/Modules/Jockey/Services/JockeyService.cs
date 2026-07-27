@@ -184,35 +184,33 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Services
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<JockeyProfile>> GetAvailableJockeysForTournamentAsync(int tourId, int currentOwnerId)
+        public async Task<IEnumerable<JockeyProfile>> GetAvailableJockeysForRaceAsync(int raceId)
         {
-            // Jockey is busy if:
-            // 1. They have an Accepted or AcceptedPendingAdmin invitation for ANY horse in this tournament
-            // 2. They have a Pending invitation for a horse owned by the CURRENT OWNER in this tournament
-            // 3. They are already a RaceParticipant in any race of this tournament
+            var race = await _context.Races
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.RaceId == raceId)
+                ?? throw new Exception("Race not found.");
 
+            // Pending invitations do not reserve a jockey. Once accepted, the
+            // jockey is busy only in the race of the registered horse.
             var acceptedInvites = await _context.Invitations
-                .Where(i => i.TourId == tourId && (i.Status == "Accepted" || i.Status == "AcceptedPendingAdmin"))
+                .Where(i => i.TourId == race.TourId
+                    && (i.Status == "Accepted" || i.Status == "AcceptedPendingAdmin")
+                    && _context.RaceRegistrations.Any(r =>
+                        r.RaceId == raceId
+                        && r.HorseId == i.HorseId
+                        && r.Status == "Approved"))
                 .Select(i => i.JockeyId)
-                .ToListAsync();
-
-            var pendingInvitesFromMe = await _context.Invitations
-                .Where(i => i.TourId == tourId && i.OwnerId == currentOwnerId && i.Status == "Pending")
-                .Select(i => i.JockeyId)
-                .ToListAsync();
-
-            var tournamentRaceIds = await _context.Races
-                .Where(r => r.TourId == tourId)
-                .Select(r => r.RaceId)
                 .ToListAsync();
 
             var participantJockeys = await _context.RaceParticipants
-                .Where(p => tournamentRaceIds.Contains(p.RaceId) && p.ParticipationStatus != "Rejected" && p.ParticipationStatus != "Cancelled")
+                .Where(p => p.RaceId == raceId
+                    && p.ParticipationStatus != "Rejected"
+                    && p.ParticipationStatus != "Cancelled")
                 .Select(p => p.JockeyId)
                 .ToListAsync();
 
             var busyIds = acceptedInvites
-                .Concat(pendingInvitesFromMe)
                 .Concat(participantJockeys)
                 .Distinct()
                 .ToList();
