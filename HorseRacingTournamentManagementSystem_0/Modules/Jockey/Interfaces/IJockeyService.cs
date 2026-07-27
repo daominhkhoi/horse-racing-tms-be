@@ -52,10 +52,11 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Interfaces
         Task<IEnumerable<JockeyProfile>> GetAllJockeysPublicAsync();
 
         /// <summary>
-        /// Trả về danh sách Jockey chưa tham gia vào giải đấu (tournament).
-        /// Jockey bị coi là đã tham gia nếu có lời mời ở trạng thái Accepted, AcceptedPendingAdmin, hoặc đã là RaceParticipant.
-        /// Lời mời Pending từ owner khác KHÔNG ngăn cản owner này mời.
+        /// Trả về danh sách Jockey khả dụng cho một race.
+        /// Invitation Pending không làm Jockey bận. Jockey chỉ bận trong race
+        /// khi đã accept (AcceptedPendingAdmin/Accepted) hoặc đã được xếp lane.
+        /// Việc tham gia một race không chặn Jockey ở race khác cùng tournament.
         /// </summary>
-        Task<IEnumerable<JockeyProfile>> GetAvailableJockeysForTournamentAsync(int tourId, int currentOwnerId);
+        Task<IEnumerable<JockeyProfile>> GetAvailableJockeysForRaceAsync(int raceId);
     }
 }
