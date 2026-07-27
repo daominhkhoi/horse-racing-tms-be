@@ -23,6 +23,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Referee")]
         public async Task<IActionResult> GetAllRaces()
         {
             try
