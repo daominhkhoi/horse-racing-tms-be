@@ -93,6 +93,76 @@ public class UserService : IUserService
         return true;
     }
 
+    public async Task<bool> DeleteUserAsync(int id)
+    {
+        var user = await _context.Users
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.UserId == id);
+
+        if (user == null)
+            return false;
+
+        if (user.Role?.RoleName == "Admin")
+            throw new InvalidOperationException("Admin accounts cannot be permanently deleted.");
+
+        var hasBusinessData =
+            await _context.Horses.AnyAsync(h => h.OwnerId == id) ||
+            await _context.Invitations.AnyAsync(i => i.OwnerId == id || i.JockeyId == id) ||
+            await _context.RaceRegistrations.AnyAsync(r => r.OwnerId == id || r.ReviewedBy == id) ||
+            await _context.RaceParticipants.AnyAsync(p => p.JockeyId == id) ||
+            await _context.Leaderboards.AnyAsync(l => l.JockeyId == id) ||
+            await _context.RefereeAssignments.AnyAsync(a => a.RefereeId == id) ||
+            await _context.Violations.AnyAsync(v => v.RefereeId == id) ||
+            await _context.Predictions.AnyAsync(p => p.SpectatorId == id) ||
+            await _context.PointTransactions.AnyAsync(t => t.SpectatorId == id) ||
+            await _context.RewardTransactions.AnyAsync(t => t.SpectatorId == id) ||
+            await _context.TopupTransactions.AnyAsync(t => t.SpectatorId == id) ||
+            await _context.RaceComments.AnyAsync(c => c.UserId == id) ||
+            await _context.HorseVerifications.AnyAsync(v => v.VerifiedBy == id);
+
+        if (hasBusinessData)
+            throw new InvalidOperationException(
+                "This user has related racing or transaction data and cannot be permanently deleted. Deactivate the account instead.");
+
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var refreshTokens = await _context.RefreshTokens
+                .Where(t => t.UserId == id)
+                .ToListAsync();
+            _context.RefreshTokens.RemoveRange(refreshTokens);
+
+            var jockeyProfile = await _context.JockeyProfiles.FindAsync(id);
+            if (jockeyProfile != null)
+                _context.JockeyProfiles.Remove(jockeyProfile);
+
+            var ownerProfile = await _context.OwnerProfiles.FindAsync(id);
+            if (ownerProfile != null)
+                _context.OwnerProfiles.Remove(ownerProfile);
+
+            var refereeProfile = await _context.RefereeProfiles.FindAsync(id);
+            if (refereeProfile != null)
+                _context.RefereeProfiles.Remove(refereeProfile);
+
+            var spectatorProfile = await _context.SpectatorProfiles.FindAsync(id);
+            if (spectatorProfile != null)
+                _context.SpectatorProfiles.Remove(spectatorProfile);
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch (DbUpdateException)
+        {
+            await transaction.RollbackAsync();
+            _context.ChangeTracker.Clear();
+            throw new InvalidOperationException(
+                "This user still has related data and cannot be permanently deleted. Deactivate the account instead.");
+        }
+
+        return true;
+    }
+
     public async Task<bool> UpdateUserAsync(int id, UpdateUserRequestDto request)
     {
         var user = await _context.Users

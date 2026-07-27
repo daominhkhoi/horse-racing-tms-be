@@ -10,4 +10,5 @@ public interface IUserService
     Task<bool> ToggleUserStatusAsync(int id);
     Task<bool> UpdateUserAsync(int id, UpdateUserRequestDto request);
     Task<UserResponseDto> CreateUserAsync(CreateUserRequestDto request);
+    Task<bool> DeleteUserAsync(int id);
 }
