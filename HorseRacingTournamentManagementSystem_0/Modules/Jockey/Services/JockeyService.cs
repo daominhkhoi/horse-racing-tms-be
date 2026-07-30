@@ -90,10 +90,39 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Jockey.Services
 
         public async Task<IEnumerable<JockeyProfile>> GetAllJockeysPublicAsync()
         {
-            return await _context.JockeyProfiles
+            var jockeys = await _context.JockeyProfiles
                 .Include(j => j.User)
                 .OrderByDescending(j => j.UserId)
                 .ToListAsync();
+
+            var performance = await _context.Results
+                // A stored, ranked result is the source of truth. Some existing
+                // tournaments are completed without persisting "Completed" on
+                // every child race, so filtering by Race.Status loses old wins.
+                .Where(r => r.RankPosition.HasValue
+                    && (r.ResultStatus == "Finished"
+                        || r.ResultStatus == "DNF"
+                        || r.ResultStatus == "DSQ"))
+                .GroupBy(r => r.Participant.JockeyId)
+                .Select(group => new
+                {
+                    JockeyId = group.Key,
+                    TotalRaces = group.Count(),
+                    Wins = group.Count(result => result.RankPosition == 1)
+                })
+                .ToDictionaryAsync(item => item.JockeyId);
+
+            foreach (var jockey in jockeys)
+            {
+                if (!performance.TryGetValue(jockey.UserId, out var stats)) continue;
+                jockey.Wins = stats.Wins;
+                jockey.TotalRaces = stats.TotalRaces;
+                jockey.WinRate = stats.TotalRaces == 0
+                    ? 0
+                    : Math.Round((double)stats.Wins / stats.TotalRaces * 100, 1);
+            }
+
+            return jockeys;
         }
 
         public async Task<IEnumerable<JockeyProfile>> GetAvailableJockeysForRaceAsync(int raceId)

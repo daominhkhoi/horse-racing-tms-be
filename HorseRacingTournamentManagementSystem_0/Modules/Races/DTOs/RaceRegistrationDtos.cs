@@ -50,5 +50,6 @@ public class RaceRegistrationSummaryResponse
     public int PendingCount { get; set; }
     public int ApprovedCount { get; set; }
     public int AcceptedJockeyCount { get; set; }
+    public int ConfirmedParticipantCount { get; set; }
     public string? CancelReason { get; set; }
 }

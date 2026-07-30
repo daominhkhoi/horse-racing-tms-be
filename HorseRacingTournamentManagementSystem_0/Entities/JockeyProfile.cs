@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HorseRacingTournamentManagementSystem_0.Entities;
 
@@ -28,6 +29,15 @@ public partial class JockeyProfile
 
     /// <summary>Số năm kinh nghiệm chính thức.</summary>
     public int? ExperienceYear { get; set; }
+
+    [NotMapped]
+    public int Wins { get; set; }
+
+    [NotMapped]
+    public int TotalRaces { get; set; }
+
+    [NotMapped]
+    public double WinRate { get; set; }
 
     // ── DỮ LIỆU PENDING (chờ Admin duyệt – FR-JCKY-002) ───────────────────
     /// <summary>Số điện thoại mới đang chờ Admin xét duyệt.</summary>
