@@ -16,6 +16,10 @@ public class RaceRegistrationService : IRaceRegistrationService
         var race = await _context.Races.FindAsync(raceId) ?? throw new Exception("Race not found.");
         if (race.Status != "Open Registration" && race.Status != "Upcoming") throw new Exception("Race registration is not open.");
         if (race.RaceDateTime.HasValue && race.RaceDateTime.Value <= DateTime.Now) throw new Exception("Cannot register for a race that has started.");
+        var confirmedParticipantCount = await _context.RaceParticipants
+            .CountAsync(p => p.RaceId == raceId && p.ParticipationStatus == "Approved");
+        if (confirmedParticipantCount >= race.MaxParticipants)
+            throw new Exception("The race is full. All lanes already have a confirmed horse-jockey pair.");
 
         var horse = await _context.Horses.FirstOrDefaultAsync(h => h.HorseId == request.HorseId && h.OwnerId == ownerId);
         if (horse == null) throw new Exception("Horse not found or you do not own this horse.");
@@ -36,6 +40,10 @@ public class RaceRegistrationService : IRaceRegistrationService
     public async Task<IEnumerable<AvailableRaceHorseResponse>> GetAvailableHorsesAsync(int ownerId, int raceId)
     {
         var race = await _context.Races.FindAsync(raceId) ?? throw new Exception("Race not found.");
+        var raceIsFull = await _context.RaceParticipants
+            .CountAsync(p => p.RaceId == raceId && p.ParticipationStatus == "Approved") >= race.MaxParticipants;
+        if (raceIsFull) return [];
+
         var tournamentRaceIds = _context.Races.Where(r => r.TourId == race.TourId).Select(r => r.RaceId);
         var assignedIds = _context.RaceParticipants.Where(p => tournamentRaceIds.Contains(p.RaceId)).Select(p => p.HorseId);
         var registeredIds = _context.RaceRegistrations.Where(r => r.Race.TourId == race.TourId && r.Status != "Rejected").Select(r => r.HorseId);
@@ -86,7 +94,8 @@ public class RaceRegistrationService : IRaceRegistrationService
         var race = await _context.Races.FindAsync(raceId) ?? throw new Exception("Race not found.");
         var registrations = _context.RaceRegistrations.Where(r => r.RaceId == raceId);
         var accepted = await registrations.CountAsync(r => r.Status == "Approved" && _context.Invitations.Any(i => i.HorseId == r.HorseId && i.TourId == race.TourId && i.Status == "Accepted"));
-        return new RaceRegistrationSummaryResponse { RaceId = raceId, RaceStatus = race.Status, MinParticipants = race.MinParticipants, MaxParticipants = race.MaxParticipants, PendingCount = await registrations.CountAsync(r => r.Status == "Pending"), ApprovedCount = await registrations.CountAsync(r => r.Status == "Approved"), AcceptedJockeyCount = accepted, CancelReason = race.CancelReason };
+        var confirmedParticipants = await _context.RaceParticipants.CountAsync(p => p.RaceId == raceId && p.ParticipationStatus == "Approved");
+        return new RaceRegistrationSummaryResponse { RaceId = raceId, RaceStatus = race.Status, MinParticipants = race.MinParticipants, MaxParticipants = race.MaxParticipants, PendingCount = await registrations.CountAsync(r => r.Status == "Pending"), ApprovedCount = await registrations.CountAsync(r => r.Status == "Approved"), AcceptedJockeyCount = accepted, ConfirmedParticipantCount = confirmedParticipants, CancelReason = race.CancelReason };
     }
 
     public async Task SetRegistrationStatusAsync(int raceId, string status)
@@ -132,7 +141,9 @@ public class RaceRegistrationService : IRaceRegistrationService
         {
             var usedLanes = await _context.RaceParticipants.Where(p => p.RaceId == registration.RaceId && p.LaneNumber.HasValue).Select(p => p.LaneNumber!.Value).ToListAsync();
             var lane = Enumerable.Range(1, registration.Race.MaxParticipants).FirstOrDefault(n => !usedLanes.Contains(n));
-            _context.RaceParticipants.Add(new RaceParticipant { RaceId = registration.RaceId, HorseId = horseId, JockeyId = jockeyId, LaneNumber = lane == 0 ? null : lane, ParticipationStatus = "Approved" });
+            if (lane == 0)
+                throw new Exception("The race is full. All lanes already have a confirmed horse-jockey pair.");
+            _context.RaceParticipants.Add(new RaceParticipant { RaceId = registration.RaceId, HorseId = horseId, JockeyId = jockeyId, LaneNumber = lane, ParticipationStatus = "Approved" });
             await _context.SaveChangesAsync();
         }
     }

@@ -296,6 +296,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
                     RaceName = r.RaceName ?? "Unknown Race",
                     TournamentId = r.TourId,
                     TournamentName = r.Tour.TourName ?? "Unknown Tournament",
+                    TournamentStatus = r.Tour.Status ?? "Upcoming",
                     TournamentBanner = r.Tour.BannerUrl,
                     Track = r.Tour.Location ?? "Unknown Track",
                     Status = r.Status ?? "Pending",
