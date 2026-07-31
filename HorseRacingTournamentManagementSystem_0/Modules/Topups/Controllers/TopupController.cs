@@ -84,12 +84,15 @@ public class TopupController : ControllerBase
 
             spectator.TotalPoints = currentPoints - request.Amount;
 
+            double taxAmount = request.Amount * 0.05;
+            double payoutAmount = request.Amount - taxAmount;
+
             var pointTransaction = new PointTransaction
             {
                 SpectatorId = spectatorId,
                 Amount = -request.Amount, // Using negative to denote withdrawal/deduction
                 TransactionType = "Withdrawal",
-                Description = $"Withdrawal to {request.BankName} - {request.AccountNumber} ({request.AccountName})"
+                Description = $"Withdrawal of {request.Amount} PTS to {request.BankName} - {request.AccountNumber}. Fee: {taxAmount} PTS. Payout: {payoutAmount * 1000:N0} VND."
             };
 
             _context.PointTransactions.Add(pointTransaction);

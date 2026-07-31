@@ -323,7 +323,10 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Races.Services
             {
                 ParticipantId = p.ParticipantId,
                 HorseName = p.Horse?.HorseName ?? "Unknown Horse",
-                JockeyName = p.Jockey?.User?.FullName ?? "Unknown Jockey" // Assuming Jockey has User relation if FullName is needed. Let's check this or use fallback.
+                HorseId = p.HorseId,
+                HorseAvatar = p.Horse?.ImageUrl,
+                JockeyName = p.Jockey?.User?.FullName ?? "Unknown Jockey",
+                LaneNumber = p.LaneNumber
             }).ToList();
         }
 
