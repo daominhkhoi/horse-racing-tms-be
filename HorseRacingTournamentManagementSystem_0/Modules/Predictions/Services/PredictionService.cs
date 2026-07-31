@@ -157,6 +157,55 @@ public class PredictionService : IPredictionService
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<AnonymousPredictionDto>> GetAnonymousPredictionsAsync()
+    {
+        var predictions = await _context.Predictions
+            .AsNoTracking()
+            .Where(p => p.Status != "Cancelled")
+            .Select(p => new
+            {
+                p.PredictionId,
+                p.SpectatorId,
+                TournamentId = p.Race.TourId,
+                TournamentName = p.Race.Tour.TourName,
+                RaceName = p.Race.RaceName,
+                HorseName = p.Participant.Horse.HorseName,
+                HorseAvatar = p.Participant.Horse.ImageUrl,
+                Odds = p.Race.RewardRatio ?? 2.0,
+                p.BetPoints,
+                p.Status,
+                p.RewardPoints,
+                TournamentStatus = p.Race.Tour.Status,
+                BetPlacedAt = p.PointTransactions
+                    .Where(t => t.TransactionType == "BetPlaced")
+                    .Max(t => (DateTime?)t.CreatedAt),
+                p.Race.RaceDateTime
+            })
+            .OrderByDescending(p => p.BetPlacedAt)
+            .ThenByDescending(p => p.PredictionId)
+            .ToListAsync();
+
+        return predictions.Select(p => new AnonymousPredictionDto
+        {
+            PredictionId = p.PredictionId,
+            // Stable alias for the same bettor without exposing their account identifier.
+            BettorAlias = $"Bettor #{((p.SpectatorId * 7919) % 10000):D4}",
+            TournamentId = p.TournamentId,
+            TournamentName = p.TournamentName,
+            RaceName = p.RaceName ?? $"Race #{p.PredictionId}",
+            HorseName = p.HorseName,
+            HorseAvatar = p.HorseAvatar,
+            Odds = p.Odds,
+            BetPoints = p.BetPoints,
+            Status = p.Status ?? "Active",
+            ProfitLoss = p.TournamentStatus == "Completed"
+                ? (p.Status == "Won" ? (p.RewardPoints ?? 0) - p.BetPoints : -p.BetPoints)
+                : null,
+            BetPlacedAt = p.BetPlacedAt,
+            RaceDateTime = p.RaceDateTime
+        });
+    }
+
     public async Task<List<AiPredictionDto>> GetAiInsightsAsync()
     {
         var participants = await _context.RaceParticipants

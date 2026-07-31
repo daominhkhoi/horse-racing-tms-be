@@ -17,14 +17,17 @@ public class UploadController : ControllerBase
     }
 
     [HttpPost("Image")]
-    public async Task<IActionResult> UploadImage(IFormFile file, [FromQuery] bool banner = false)
+    public async Task<IActionResult> UploadImage(
+        IFormFile file,
+        [FromQuery] bool banner = false,
+        [FromQuery] bool preserveAspect = false)
     {
         if (file == null || file.Length == 0)
         {
             return BadRequest(new { Message = "No file uploaded." });
         }
 
-        var resultUrl = await _cloudinaryService.UploadImageAsync(file, banner);
+        var resultUrl = await _cloudinaryService.UploadImageAsync(file, banner, preserveAspect);
 
         if (resultUrl == null)
         {

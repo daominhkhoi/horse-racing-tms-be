@@ -7,5 +7,6 @@ public interface IPredictionService
     Task<string> PlaceBetAsync(int spectatorId, BetRequestDto request);
     Task<string> CancelBetAsync(int spectatorId, int predictionId);
     Task<IEnumerable<PredictionResponseDto>> GetMyPredictionsAsync(int spectatorId);
+    Task<IEnumerable<AnonymousPredictionDto>> GetAnonymousPredictionsAsync();
     Task<List<AiPredictionDto>> GetAiInsightsAsync();
 }
