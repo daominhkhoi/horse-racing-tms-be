@@ -8,7 +8,7 @@ namespace HorseRacingTournamentManagementSystem_0.Modules.Predictions.Controller
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Spectator")]
+[Authorize]
 public class PredictionController : ControllerBase
 {
     private readonly IPredictionService _predictionService;
@@ -19,6 +19,7 @@ public class PredictionController : ControllerBase
     }
 
     [HttpPost("bet")]
+    [Authorize(Roles = "Spectator")]
     public async Task<IActionResult> PlaceBet([FromBody] BetRequestDto request)
     {
         if (request.BetPoints <= 0) return BadRequest(new { Message = "Bet points must be greater than zero." });
@@ -35,6 +36,7 @@ public class PredictionController : ControllerBase
     }
 
     [HttpPost("{id}/cancel")]
+    [Authorize(Roles = "Spectator")]
     public async Task<IActionResult> CancelBet(int id)
     {
         var userIdStr = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -49,6 +51,7 @@ public class PredictionController : ControllerBase
     }
 
     [HttpGet("my-bets")]
+    [Authorize(Roles = "Spectator")]
     public async Task<IActionResult> GetMyBets()
     {
         var userIdStr = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -65,5 +68,13 @@ public class PredictionController : ControllerBase
     {
         var insights = await _predictionService.GetAiInsightsAsync();
         return Ok(new { data = insights });
+    }
+
+    [HttpGet("anonymous-feed")]
+    [Authorize(Roles = "Admin,Spectator")]
+    public async Task<IActionResult> GetAnonymousFeed()
+    {
+        var predictions = await _predictionService.GetAnonymousPredictionsAsync();
+        return Ok(new { data = predictions });
     }
 }
